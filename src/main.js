@@ -610,8 +610,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     mainGrid.innerHTML = '<div class="loading-apps" style="grid-column: 1/-1; text-align: center; padding: 2rem; opacity: 0.6;">Chargement des applications...</div>';
 
     try {
-        // Add a small delay to ensure UI updates if scan is too fast? No, not needed.
-        allApps = await window.electronAPI.getApps();
+        // Load standard and Steam apps
+        const [stdApps, steamApps] = await Promise.all([
+            window.electronAPI.getApps(),
+            window.electronAPI.getSteamGames()
+        ]);
+
+        // Merge and Deduplicate
+        const merged = [...stdApps, ...steamApps];
+        const unique = new Map();
+
+        merged.forEach(app => {
+            // Normalize name key
+            const key = app.name.toLowerCase().trim();
+            if (!unique.has(key)) {
+                unique.set(key, app);
+            } else {
+                // If collision, prefer Steam app if the existing one is not steam?
+                // Or prefer the one with an icon?
+                const existing = unique.get(key);
+                // If new is steam and existing is not, take steam (cleaner launcher)
+                // UNLESS existing has icon and steam does not.
+                if (app.type === 'steam' && existing.type !== 'steam') {
+                    if (app.icon || !existing.icon) {
+                        unique.set(key, app);
+                    }
+                }
+            }
+        });
+
+        allApps = Array.from(unique.values());
         renderAll();
     } catch (error) {
         console.error("Failed to load apps:", error);
