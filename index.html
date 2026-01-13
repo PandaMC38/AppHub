@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppHub</title>
+    <link rel="stylesheet" href="./src/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <script>
+        window.onerror = function (message, source, lineno, colno, error) {
+            alert("Erreur Script:\n" + message + "\nLine: " + lineno);
+        };
+        window.addEventListener('unhandledrejection', function (event) {
+            alert("Erreur Async:\n" + event.reason);
+        });
+    </script>
+    <div class="title-drag-region"></div>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-logo">AH</div>
+
+            <div class="nav-links">
+                <button class="nav-btn active" data-category="all">
+                    <span class="icon">🏠</span>
+                    <span class="label">Toutes</span>
+                </button>
+                <button class="nav-btn" data-category="recent">
+                    <span class="icon">🕒</span>
+                    <span class="label">Récents</span>
+                </button>
+                <button class="nav-btn" data-category="favorites">
+                    <span class="icon">⭐</span>
+                    <span class="label">Favoris</span>
+                </button>
+                <button class="nav-btn" data-category="top">
+                    <span class="icon">🔥</span>
+                    <span class="label">Populaires</span>
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="settings-btn" class="nav-btn" title="Paramètres">
+                    <span class="icon">⚙️</span>
+                    <span class="label">Réglages</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="user-welcome">
+                    <h1>Bonjour, <span id="user-name-display">Célia</span></h1>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="search-bar" placeholder="Rechercher...">
+                </div>
+            </header>
+
+            <div id="content-area">
+                <!-- Widgets Section (Dynamic) -->
+                <div class="dashboard-controls">
+                    <h2 class="section-title" style="margin: 0;">Tableau de Bord</h2>
+                    <div class="dashboard-actions">
+                        <button id="edit-mode-btn" title="Modifier / Ajouter">✏️</button>
+                    </div>
+                </div>
+
+                <div id="widgets-area" class="dashboard-grid">
+                    <!-- Widgets injected by JS -->
+                </div>
+
+                <!-- Widget Library Modal -->
+                <div id="widget-library-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal" id="close-lib-btn">&times;</span>
+                        <h2>Ajouter un Widget</h2>
+                        <div class="widget-library-grid">
+                            <div class="lib-item" data-type="time">
+                                <div class="lib-icon">⏰</div>
+                                <div class="lib-name">Horloge</div>
+                            </div>
+                            <div class="lib-item" data-type="weather">
+                                <div class="lib-icon">⛅</div>
+                                <div class="lib-name">Météo</div>
+                            </div>
+                            <div class="lib-item" data-type="media">
+                                <div class="lib-icon">🎵</div>
+                                <div class="lib-name">Média (Deezer/Spotify)</div>
+                            </div>
+                            <div class="lib-item" data-type="system">
+                                <div class="lib-icon">💻</div>
+                                <div class="lib-name">Système</div>
+                            </div>
+                            <div class="lib-item" data-type="calculator">
+                                <div class="lib-icon">🧮</div>
+                                <div class="lib-name">Calculatrice</div>
+                            </div>
+                            <div class="lib-item" data-type="notes">
+                                <div class="lib-icon">📝</div>
+                                <div class="lib-name">Notes</div>
+                            </div>
+                            <div class="lib-item" data-type="todo">
+                                <div class="lib-icon">✅</div>
+                                <div class="lib-name">To-Do List</div>
+                            </div>
+                            <div class="lib-item" data-type="disk">
+                                <div class="lib-icon">💾</div>
+                                <div class="lib-name">Espace Disque</div>
+                            </div>
+                            <div class="lib-item" data-type="quicklaunch">
+                                <div class="lib-icon">🚀</div>
+                                <div class="lib-name">Lancement Rapide</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Apps Section -->
+                <div id="top-apps-section" style="display: none;">
+                    <h2 class="section-title">Les plus utilisées 🔥</h2>
+                    <div id="top-apps-grid" class="app-grid"></div>
+                </div>
+
+                <div id="favorites-section" style="display: none;">
+                    <h2 class="section-title">Favoris ⭐</h2>
+                    <div id="favorites-grid" class="app-grid"></div>
+                </div>
+
+                <h2 class="section-title">Toutes les applications</h2>
+                <div id="app-grid" class="app-grid">
+                    <!-- App cards will be injected here -->
+                </div>
+            </div>
+
+            <!-- Custom Context Menu -->
+            <div id="context-menu" class="context-menu">
+                <div class="menu-item" id="menu-launch">Ouvrir</div>
+                <div class="menu-item" id="menu-toggle-fav">Ajouter aux favoris</div>
+            </div>
+        </main>
+    </div> <!-- End .app-layout -->
+
+    <!-- Video Background (Global) -->
+    <video id="video-bg" autoplay loop muted playsinline></video>
+
+    <!-- Settings Modal (Side Panel) -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-settings-btn">&times;</span>
+            <h2>Paramètres</h2>
+
+            <div class="setting-item">
+                <label>Votre Nom</label>
+                <input type="text" id="username-input" placeholder="Célia" class="settings-input">
+            </div>
+
+            <div class="setting-item">
+                <label>Couleur du thème</label>
+                <input type="color" id="accent-color-input" value="#646cff" class="settings-input">
+            </div>
+
+            <div class="setting-item">
+                <label>Taille de l'interface</label>
+                <input type="range" id="size-input" min="100" max="250" value="140" class="settings-range">
+            </div>
+
+            <div class="setting-item">
+                <label>Transparence des cartes</label>
+                <input type="range" id="opacity-input" min="0" max="50" value="5" class="settings-range">
+            </div>
+
+            <div class="setting-item">
+                <label>Fond d'écran</label>
+                <button id="change-wallpaper-btn">Choisir une image...</button>
+                <button id="reset-wallpaper-btn">Réinitialiser</button>
+            </div>
+
+            <div class="setting-item" style="margin-top: 30px; text-align: center;">
+                <button id="save-settings-btn"
+                    style="background: #28a745; width: 100%; padding: 12px; font-weight: bold; font-size: 1.1rem;">SAUVEGARDER</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="./src/main.js" defer></script>
+</body>
+
+</html>
