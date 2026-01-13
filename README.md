@@ -59,34 +59,23 @@ Le cœur d'AppHub est son moteur de scan.
 
 ---
 
-### 🛠️ Installation & Démarrage
+### 🛠️ Installation & Démarrage Facile
+
+L'installation a été simplifiée au maximum. Vous n'avez pas besoin de taper des lignes de commande complexes.
 
 #### Prérequis
-- **OS** : Windows 10 ou 11 (Recommandé).
-- **Node.js** : Version 16.0.0 ou supérieure.
+- **Node.js** : Doit être installé sur votre ordinateur. [Télécharger Node.js](https://nodejs.org/) (Version LTS recommandée).
 
-#### Pas à Pas
-1. **Cloner le projet**
-   ```bash
-   git clone https://github.com/PandaMC38/AppHub.git
-   cd AppHub
-   ```
+#### Instructions
+1. **Télécharger/Cloner le projet** sur votre ordinateur.
+2. Double-cliquez sur le fichier **`AppHub_Silent.vbs`** (à la racine du dossier).
+   - *Le script va automatiquement installer les fichiers nécessaires lors du premier lancement.*
+   - *Une fois prêt, l'application se lancera.*
+3. **C'est tout !**
+   - Un **raccourci** sera automatiquement créé sur votre Bureau pour les prochains lancements.
 
-2. **Installer les dépendances**
-   ```bash
-   npm install
-   ```
-
-3. **Lancer en mode Développement** (Recommandé pour tester)
-   ```bash
-   npm run dev    # Lance le serveur Vite
-   npm start      # Lance la fenêtre Electron
-   ```
-
-4. **Compiler l'exécutable (.exe)**
-   ```bash
-   npm run build  # Crée l'installeur dans /dist
-   ```
+> [!IMPORTANT]
+> Si vous souhaitez développer ou modifier le code, vous pouvez toujours utiliser `npm install` et `npm run dev` manuellement.
 
 ---
 
@@ -117,17 +106,9 @@ AppHub/
 │   ├── style.css      # Design System
 │   └── logo.png       # Assets
 ├── index.html         # Point d'entrée
-└── package.json       # Dépendances et Scripts
+├── AppHub_Silent.vbs  # Lanceur silencieux & Installateur auto
+└── package.json       # Dépendances
 ```
-
----
-
-### ⚙️ Guide de Configuration
-
-L'application est configurée pour fonctionner "Out of the Box", mais voici quelques astuces :
-
-- **Changer de Wallpaper** : Allez dans *Paramètres* (⚙️) > *Fond d'écran*. Vous pouvez sélectionner un fichier `.jpg`, `.png` ou une vidéo `.mp4`.
-- **Réinitialiser** : Si un widget est bloqué, vous pouvez nettoyer le *Local Storage* via la console développeur (`Ctrl+Shift+I` -> Application -> Clear Storage) ou via le bouton de reset dans les paramètres.
 
 ---
 
@@ -162,25 +143,23 @@ A dynamic grid allowing you to place and resize widgets at will.
 
 ---
 
-### 🛠️ Installation
+### 🛠️ Easy Installation & Setup
 
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/PandaMC38/AppHub.git
-   ```
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-3. **Run (Dev Mode)**
-   ```bash
-   npm run dev
-   npm start
-   ```
-4. **Build (.exe)**
-   ```bash
-   npm run build
-   ```
+Installation is streamlined for ease of use. No command line required for normal usage.
+
+#### Prerequisites
+- **Node.js**: Must be installed. [Download Node.js](https://nodejs.org/).
+
+#### Instructions
+1. **Download/Clone the project** to your PC.
+2. Double-click on **`AppHub_Silent.vbs`** (in the root folder).
+   - *The script will automatically install necessary dependencies on the first run.*
+   - *Once ready, the app will launch.*
+3. **That's it!**
+   - A **shortcut** will automatically be created on your Desktop for future use.
+
+> [!IMPORTANT]
+> If you are a developer, you can still use `npm install` and `npm run dev` manually.
 
 ---
 
