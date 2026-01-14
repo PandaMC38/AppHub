@@ -5,6 +5,7 @@
 import { WidgetManager } from './WidgetManager.js';
 import { ProfileManager } from './ProfileManager.js';
 import { SpotlightManager } from './SpotlightManager.js';
+import { NotificationManager } from './NotificationManager.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- UI Elements ---
@@ -70,6 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. Widget Manager
     const widgetManager = new WidgetManager(gridEl);
     widgetManager.render();
+    const notifications = new NotificationManager();
 
     // 3. Profile Manager (for Themes)
     const profileManager = new ProfileManager(widgetManager, (prefs) => {
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             loadBtn.onclick = () => {
                 if (confirm(`Charger le thème "${name}" ?`)) {
                     profileManager.loadProfile(name);
-                    alert("Thème chargé !");
+                    notifications.show("Thème chargé !", 'success');
                 }
             };
 
@@ -148,6 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (confirm(`Supprimer "${name}" ?`)) {
                     profileManager.deleteProfile(name);
                     renderProfilesList();
+                    notifications.show('Profil supprimé.', 'info');
                 }
             };
 
@@ -163,15 +166,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     saveProfileBtn.onclick = () => {
         const name = newProfileName.value.trim();
         if (!name) {
-            alert("Veuillez entrer un nom pour le thème.");
+            notifications.show("Veuillez entrer un nom pour le thème.", 'warning');
             return;
         }
         if (profileManager.saveProfile(name)) {
             newProfileName.value = '';
             renderProfilesList();
-            alert(`Thème "${name}" sauvegardé !`);
+            notifications.show(`Thème "${name}" sauvegardé !`, 'success');
         } else {
-            alert("Erreur lors de la sauvegarde.");
+            notifications.show("Erreur lors de la sauvegarde.", 'error');
         }
     };
 
@@ -355,7 +358,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         welcomeTitle.textContent = `Bienvenue, ${usernameInput.value}`;
 
         settingsModal.classList.remove('open');
-        alert('Paramètres sauvegardés !');
+        notifications.show('Paramètres sauvegardés !', 'success');
     };
 
     // Wallpaper

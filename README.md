@@ -66,6 +66,8 @@ Une barre de commande universelle (**`Ctrl + Space`**) style "Raycast" ou "macOS
 - **Fonds d'écran Vivants** : Support natif des fichiers `.mp4` pour des arrière-plans vidéo, ou images classiques.
 - **Store de Thèmes (Presets)** : Sauvegardez et chargez instantanément vos configurations complètes (Widgets + Couleurs + Fond d'écran). Ex: "Mode Travail", "Gaming", "Soirée".
 - **Interface de Paramètres Moderne** : Menu centré avec prévisualisation en direct des couleurs et de la transparence.
+- **Notifications Douces ("Toasts")** : Système de messages non-intrusifs, animés et parfaitement intégrés au design (verre fumé).
+
 
 ---
 
@@ -165,6 +167,8 @@ A universal command bar (**`Ctrl + Space`**) similar to "Raycast" or "macOS".
 - **Live Wallpapers**: Native `.mp4` video background support.
 - **Theme Store (Presets)**: Save and load full configurations (Widgets + Colors + Wallpaper) instantly.
 - **Modern Settings UI**: Centered modal with live previews for color and opacity changes.
+- **Soft Notifications (Toasts)**: Non-intrusive, animated message system fully integrated with the design (frosted glass).
+
 
 ---
 

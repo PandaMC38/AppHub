@@ -1,3 +1,5 @@
+import { NotificationManager } from './NotificationManager.js';
+
 export class SpotlightManager {
     constructor(allApps) {
         this.allApps = allApps;
@@ -230,7 +232,14 @@ export class SpotlightManager {
                 // Copy to clipboard
                 navigator.clipboard.writeText(result.value);
                 this.input.value = result.value; // Show result
-                // alert('Copié !'); // Removed as per user request
+                // We use a custom event or a global helper if NotificationManager isn't passed to SpotlightManager.
+                // Since SpotlightManager is standalone, we might need to pass the notification instance or dispatch event.
+                // Let's assume we can dispatch a custom event for the main process to pick up, OR we can instantiate NotificationManager here too since it's just DOM.
+                // Actually, NotificationManager is a class we can just import.
+                // checking imports... we need to import it at the top.
+                // For now, let's try a simple approach:
+                const notif = new NotificationManager();
+                notif.show('Résultat copié !', 'success');
                 break;
             case 'web':
                 window.open(result.value, '_blank');
