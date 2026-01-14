@@ -65,6 +65,14 @@ function createWindow() {
         }
     });
 
+
+
+    // Initialize Media Handlers with window instance
+    try {
+        // Need to require if not available in scope, but it is global in file
+        setupMediaHandlers(win);
+    } catch (e) { console.error("Media Handler Error:", e); }
+
     win.once('ready-to-show', () => {
         setTimeout(() => {
             if (splash) splash.close();

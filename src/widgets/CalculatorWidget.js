@@ -1,6 +1,11 @@
 import { Widget } from './Widget.js';
 
 export class CalculatorWidget extends Widget {
+    constructor(id, type, size, data, manager) {
+        super(id, type, size, data, manager);
+        this.allowedSizes = ['2x2'];
+    }
+
     renderContent(container) {
         // Need to ensure the CSS handles the grid layout for calculator
         container.innerHTML = `

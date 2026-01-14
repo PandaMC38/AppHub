@@ -44,12 +44,14 @@ export class WidgetManager {
                 return {
                     id: w.id,
                     type: w.type,
-                    size: w.size, // updated by cycleSize
+                    size: instance.size, // Update with new size from instance
                     data: w.data
                 };
             }
+
             return w;
         });
+        this.widgets = toSave;
         localStorage.setItem('apphub_widgets', JSON.stringify(toSave));
     }
 

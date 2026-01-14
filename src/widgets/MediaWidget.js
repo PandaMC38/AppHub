@@ -5,6 +5,7 @@ export class MediaWidget extends Widget {
         super(id, type, size, data, manager);
         this.currentInfo = null;
         this.unsubscribe = null;
+        this.allowedSizes = ['2x1', '4x1', '2x2', '4x2'];
     }
 
     renderContent(container) {

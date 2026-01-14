@@ -380,6 +380,52 @@ h1 {
     transition: transform 0.3s ease;
 }
 
+/* Widget Sizes (Col x Row) */
+.widget.size-1x1 {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+.widget.size-1x2 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+.widget.size-2x1 {
+    grid-column: span 2;
+    grid-row: span 1;
+}
+
+.widget.size-2x2 {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.widget.size-3x1 {
+    grid-column: span 3;
+    grid-row: span 1;
+}
+
+.widget.size-3x2 {
+    grid-column: span 3;
+    grid-row: span 2;
+}
+
+
+.widget.size-4x1 {
+    grid-column: 1 / -1;
+    grid-row: span 1;
+}
+
+/* Full Row */
+.widget.size-4x2 {
+    grid-column: 1 / -1;
+    grid-row: span 2;
+}
+
+/* Full Large */
+
+/* Legacy support (to be removed smoothly if needed, but we keep mapped) */
 .widget.span-2 {
     grid-column: span 2;
 }
@@ -427,6 +473,61 @@ h1 {
 
 .dashboard-grid.edit-mode .widget-controls {
     display: flex;
+}
+
+/* Resize Menu */
+.resize-menu {
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    background: rgba(25, 25, 30, 0.95);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 0.5rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    min-width: 120px;
+    animation: fadeIn 0.1s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.resize-menu-item {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 0.9rem;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.resize-menu-item:hover {
+    background: var(--accent);
+}
+
+.resize-menu-item.active {
+    background: rgba(100, 108, 255, 0.2);
+    color: var(--accent);
+    font-weight: 700;
 }
 
 @keyframes shake {

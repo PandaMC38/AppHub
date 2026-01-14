@@ -5,7 +5,7 @@
   # 🚀 AppHub
   **Votre Espace de Travail Ultime / Your Ultimate Workspace**
 
-  [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=for-the-badge)](https://github.com/PandaMC38/AppHub)
+  [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg?style=for-the-badge)](https://github.com/PandaMC38/AppHub)
   [![License](https://img.shields.io/badge/license-ISC-green.svg?style=for-the-badge)](https://opensource.org/licenses/ISC)
   [![Electron](https://img.shields.io/badge/Electron-29.1.0-47848F?style=for-the-badge&logo=electron&logoColor=white)](https://www.electronjs.org/)
   [![Vite](https://img.shields.io/badge/Vite-5.0.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -36,6 +36,7 @@ AppHub intègre un système de grille dynamique (Grid Layout) permettant de plac
 
 | Widget | Description | Détails Techniques |
 | :--- | :--- | :--- |
+| **🎵 Média Universel** | Contrôle Spotify, Deezer, YouTube Music, etc. | Utilise l'API Windows (SMTC) native. Affiche titre, artiste et pochette. |
 | **⏱️ Horloge & Date** | Affichage élégant de l'heure locale. | Mise à jour en temps réel (1s). Format `fr-FR`. |
 | **☁️ Météo Live** | Température et conditions actuelles. | Connecté à l'API **Open-Meteo**. Géolocalisation par défaut (Paris). |
 | **💻 Moniteur Système** | Utilisation RAM & CPU en direct. | Utilise `os.freemem()` via IPC natif pour une précision parfaite. |
@@ -54,6 +55,7 @@ Le cœur d'AppHub est son moteur de scan.
 
 #### 🎨 Personnalisation Totale
 - **Mode Édition (Drag & Drop)** : Organisez votre grille comme sur un smartphone.
+- **Redimensionnement Avancé** : Menu de sélection de taille (1x1, 1x2, 2x1, 2x2, 3x1, 3x2, 4x1, 4x2) pour une flexibilité totale.
 - **Système de Thèmes** : Changez la couleur d'accentuation (Accent Color) et l'opacité des cartes.
 - **Fonds d'écran Vivants** : Support natif des fichiers `.mp4` pour des arrière-plans vidéo, ou images classiques.
 
@@ -81,31 +83,37 @@ L'installation a été simplifiée au maximum. Vous n'avez pas besoin de taper d
 
 ### 🧠 Architecture Technique ("Sous le Capot")
 
-AppHub est construit sur une architecture **biprocessus** sécurisée :
+AppHub est construit sur une architecture **biprocessus** sécurisée et modulaire :
 
 #### 1. Processus Principal (`electron/main.js`)
 Gère le système d'exploitation.
-- **IPC Handlers** : Écoute les demandes du frontend (ex: `get-disk-space`).
-- **PowerShell Integration** : Exécute des scripts PowerShell invisibles pour récupérer les infos disques.
+- **Handlers Modulaires** : Code découpé en modules (`electron/handlers/*.js`) pour la clarté.
+- **IPC Handlers** : Écoute les demandes du frontend (ex: `get-disk-space`, `media-control`).
+- **PowerShell Integration** : Scripts dédiés (`electron/scripts/`) pour interagir avec Windows (SMTC, Disques).
 - **File System** : Lit le disque pour trouver les applications et gérer les wallpapers.
 
-#### 2. Processus de Rendu (`src/main.js` & `index.html`)
+#### 2. Processus de Rendu (`src/main.js` & `src/widgets/`)
 L'interface utilisateur.
-- **Vanilla JS + Vite** : Pas de framework lourd (React/Vue) pour une performance maximale.
-- **CSS Variables** : Gestion dynamique des thèmes (`--accent`, `--card-bg-opacity`).
-- **LocalStorage** : Sauvegarde ultra-rapide de la position des widgets et des préférences.
+- **Architecture Orientée Objet** : Chaque widget est une classe (`src/widgets/*.js`) héritant d'une classe de base.
+- **WidgetManager** : Gère le cycle de vie, la sauvegarde et le rendu des widgets.
+- **Vanilla JS + Vite** : Pas de framework lourd pour une performance maximale.
+- **CSS Variables** : Gestion dynamique des thèmes.
 
-#### 📂 Arborescence des Fichiers
+#### 📂 Arborescence des Fichiers Clés
 ```
 AppHub/
 ├── electron/
-│   ├── main.js        # Cerveau de l'application (Backend)
+│   ├── handlers/      # Logique métier (AppScanner, MediaHandler...)
+│   ├── scripts/       # Scripts PowerShell (MediaControl...)
+│   ├── main.js        # Point d'entrée Backend
 │   └── preload.js     # Pont sécurisé (ContextBridge)
 ├── src/
-│   ├── main.js        # Logique Frontend (Widgets, UI)
+│   ├── widgets/       # Classes des Widgets (Clock, Media, Weather...)
+│   ├── WidgetManager.js # Gestionnaire des widgets
+│   ├── main.js        # Point d'entrée Frontend
 │   ├── style.css      # Design System
 │   └── logo.png       # Assets
-├── index.html         # Point d'entrée
+├── index.html         # Template HTML
 ├── AppHub_Silent.vbs  # Lanceur silencieux & Installateur auto
 └── package.json       # Dépendances
 ```
@@ -124,6 +132,7 @@ AppHub/
 #### 🧩 Widget Ecosystem
 A dynamic grid allowing you to place and resize widgets at will.
 
+- **🎵 Universal Media**: Controls various players (Spotify, YouTube, etc.) via Windows SMTC.
 - **⏱️ Clock & Date**: Elegant time display.
 - **☁️ Live Weather**: Real-time temperature and conditions (Open-Meteo API).
 - **💻 System Monitor**: RAM usage tracking via native IPC.
@@ -138,6 +147,7 @@ A dynamic grid allowing you to place and resize widgets at will.
 
 #### 🎨 Customization
 - **Drag & Drop**: Reorder widgets effortlessly.
+- **Advanced Resizing**: Size selection menu (1x1, 1x2, 2x1, 2x2, 3x1, 3x2, 4x1, 4x2) for complete flexibility.
 - **Live Wallpapers**: Native `.mp4` video background support.
 - **Theming**: Custom accent colors and opacity settings.
 
@@ -165,10 +175,10 @@ Installation is streamlined for ease of use. No command line required for normal
 
 ### 🧠 Under the Hood
 
-AppHub uses a secure **dual-process** architecture:
+AppHub uses a secure **dual-process** modular architecture:
 
-- **Main Process**: Handles OS interactions (File System, PowerShell scripts for disk stats).
-- **Renderer Process**: Lightweight Vanilla JS + Vite for maximum UI performance. Data persistence is handled via LocalStorage.
+- **Main Process**: Handles OS interactions via modular handlers (`electron/handlers`) and PowerShell scripts.
+- **Renderer Process**: Lightweight Vanilla JS + Vite. Using Object-Oriented Widgets (`src/widgets/*.js`) and a `WidgetManager` for scalability.
 
 ---
 
