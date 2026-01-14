@@ -6,6 +6,7 @@ import { WidgetManager } from './WidgetManager.js';
 import { ProfileManager } from './ProfileManager.js';
 import { SpotlightManager } from './SpotlightManager.js';
 import { NotificationManager } from './NotificationManager.js';
+import { VoiceAssistant } from './VoiceAssistant.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- UI Elements ---
@@ -209,45 +210,78 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- App Loading & Rendering ---
     appGrid.innerHTML = '<div class="loading-apps" style="grid-column: 1/-1; text-align: center; padding: 2rem; opacity: 0.6;">Chargement des applications...</div>';
 
-    try {
-        const [stdApps, steamApps] = await Promise.all([
-            window.electronAPI.getApps(),
-            window.electronAPI.getSteamGames()
-        ]);
 
-        // Merge & Dedup
-        const merged = [...stdApps, ...steamApps];
-        const unique = new Map();
-        merged.forEach(app => {
-            const key = app.name.toLowerCase().trim();
-            if (!unique.has(key)) {
-                unique.set(key, app);
-            } else {
-                const existing = unique.get(key);
-                // Prefer Steam if available, or icon presence
-                if (app.type === 'steam' && existing.type !== 'steam') {
-                    if (app.icon || !existing.icon) unique.set(key, app);
+    // Load Apps
+    const loadApps = async () => {
+        try {
+            const [stdApps, steamApps] = await Promise.all([
+                window.electronAPI.getApps(),
+                window.electronAPI.getSteamGames()
+            ]);
+
+            // Merge & Dedup
+            const merged = [...stdApps, ...steamApps];
+            const unique = new Map();
+            merged.forEach(app => {
+                const key = app.name.toLowerCase().trim();
+                if (!unique.has(key)) {
+                    unique.set(key, app);
+                } else {
+                    const existing = unique.get(key);
+                    // Prefer Steam if available, or icon presence
+                    if (app.type === 'steam' && existing.type !== 'steam') {
+                        if (app.icon || !existing.icon) unique.set(key, app);
+                    }
                 }
-            }
-        });
-        allApps = Array.from(unique.values());
-        renderApps();
+            });
+            allApps = Array.from(unique.values());
+            renderApps();
 
-        // Initialize Spotlight
-        new SpotlightManager(allApps);
-    } catch (error) {
-        console.error("Failed to load apps:", error);
-        appGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ff6b6b; padding: 2rem;">Erreur lors du chargement des applications.</div>`;
-    }
+            // 4. Spotlight & Search
+            const spotlight = new SpotlightManager(allApps);
+
+            // 5. Voice Assistant (Jarvis)
+            const jarvis = new VoiceAssistant(spotlight);
+
+        } catch (error) {
+            console.error("Failed to load apps:", error);
+            appGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ff6b6b; padding: 2rem;">Erreur lors du chargement des applications.</div>`;
+        }
+    };
+
+    loadApps(); // Call the async function to load apps
+
+    let currentCategory = 'all';
 
     function renderApps(query = '') {
         appGrid.innerHTML = '';
 
-        // Separate favorites
-        const favApps = allApps.filter(app => favorites.includes(app.path));
-        const regularApps = allApps.filter(app => !favorites.includes(app.path));
+        // 1. Filter by Query
+        let filtered = allApps.filter(app => app.name.toLowerCase().includes(query));
 
-        const filtered = [...favApps, ...regularApps].filter(app => app.name.toLowerCase().includes(query));
+        // 2. Filter by Category
+        if (currentCategory === 'favorites') {
+            filtered = filtered.filter(app => favorites.includes(app.path));
+        } else if (currentCategory === 'recent') {
+            // Mock: Random 5 for now, or just show all
+            // TODO: Implement real recent logic
+            filtered = filtered.slice(0, 8);
+        } else if (currentCategory === 'top') {
+            // Mock: Random 5
+            filtered = filtered.slice(0, 5);
+        }
+
+        // Always put favorites on top for 'all' view
+        if (currentCategory === 'all') {
+            const favs = filtered.filter(app => favorites.includes(app.path));
+            const others = filtered.filter(app => !favorites.includes(app.path));
+            filtered = [...favs, ...others];
+        }
+
+        if (filtered.length === 0) {
+            appGrid.innerHTML = '<div class="no-results" style="grid-column: 1/-1; text-align: center; opacity: 0.5;">Aucune application trouvée</div>';
+            return;
+        }
 
         filtered.forEach(app => {
             const isFav = favorites.includes(app.path);
@@ -275,6 +309,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Search ---
     searchBar.addEventListener('input', (e) => renderApps(e.target.value.toLowerCase()));
+
+    // --- Category Navigation ---
+    const navBtns = document.querySelectorAll('.nav-btn[data-category]');
+    navBtns.forEach(btn => {
+        btn.onclick = () => {
+            // Update Active State
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update Filter
+            currentCategory = btn.dataset.category;
+            renderApps(searchBar.value.toLowerCase());
+        };
+    });
 
     // --- Event Listeners ---
 

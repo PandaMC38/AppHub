@@ -59,6 +59,17 @@ Une barre de commande universelle (**`Ctrl + Space`**) style "Raycast" ou "macOS
 - **Calculatrice Intégrée** : Tapez un calcul (`12*5+10`) et voyez le résultat instantanément.
 - **Contrôle Système** : Eteindre, Redémarrer, Veille via commandes texte.
 
+#### 🎙️ Jarvis (Assistant Vocal)
+Votre assistant personnel intégré, toujours à l'écoute.
+- **Activation** : Cliquez sur le micro 🎙️ (en bas à droite) pour l'activer/désactiver.
+    - 🔴 **Rouge** : En veille / Micro coupé.
+    - 🟢 **Vert** : Écoute active.
+- **Commandes Vocales** :
+    - *"Lance [Nom de l'app]"* (ex: "Lance Chrome")
+    - *"Mets de la musique", "Pause", "Suivant"* (Contrôle Spotify/Deezer)
+    - *"Quelle heure est-il ?"*
+    - *"Éteindre le PC"* (Arrêt dans 3 secondes)
+
 #### 🎨 Personnalisation Totale
 - **Mode Édition (Drag & Drop)** : Organisez votre grille comme sur un smartphone.
 - **Redimensionnement Avancé** : Menu de sélection de taille (1x1, 1x2, 2x1, 2x2, 3x1, 3x2, 4x1, 4x2) pour une flexibilité totale.
@@ -160,6 +171,17 @@ A universal command bar (**`Ctrl + Space`**) similar to "Raycast" or "macOS".
 - **Blazing Fast Launcher**: Open apps, files, and web searches.
 - **Integrated Calculator**: Type a math expression (`12*5+10`) to see the result instantly.
 - **System Control**: Shutdown, Restart, Sleep via text commands.
+
+#### 🎙️ Jarvis (Voice Assistant)
+Your built-in personal assistant.
+- **Toggle**: Click the microphone icon 🎙️ (bottom right) to enable/disable.
+    - 🔴 **Red**: Standby / Muted.
+    - 🟢 **Green**: Active listening.
+- **Voice Commands** (French):
+    - *"Lance [App Name]"* (e.g., "Lance Chrome")
+    - *"Mets de la musique", "Pause", "Suivant"* (Media Control)
+    - *"Quelle heure est-il ?"* (Time check)
+    - *"Éteindre le PC"* (Shutdown system)
 
 #### 🎨 Customization
 - **Drag & Drop**: Reorder widgets effortlessly.

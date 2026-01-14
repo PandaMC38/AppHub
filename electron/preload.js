@@ -10,5 +10,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     controlMedia: (cmd) => ipcRenderer.invoke('media-control', cmd),
     onMediaUpdate: (callback) => ipcRenderer.on('media-update', (event, value) => callback(value)),
     executeSystemCommand: (cmd) => ipcRenderer.invoke('execute-system-command', cmd),
-    searchFiles: (query) => ipcRenderer.invoke('search-files', query)
+    searchFiles: (query) => ipcRenderer.invoke('search-files', query),
+    getCalendarEvents: (url) => ipcRenderer.invoke('get-calendar-events', url)
 });

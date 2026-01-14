@@ -544,9 +544,15 @@ h1 {
 /* Widget Library Modal */
 .widget-library-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 1.2rem;
+    margin-top: 0;
+    overflow-y: auto;
+    flex: 1;
+    /* Take remaining space */
+    padding-right: 5px;
+    /* Space for scrollbar */
+    padding-bottom: 2rem;
 }
 
 .lib-item {
@@ -1219,14 +1225,32 @@ h1 {
     left: 0;
     right: 0;
     width: 100%;
-    height: auto;
-    max-height: 50vh;
-    /* Adjust as needed */
+    height: 70vh;
+    /* Fixed height for consistency */
+    max-height: none;
     border-left: none;
     border-top: 1px solid var(--glass-border);
     transform: translateY(100%);
     box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.5);
     border-radius: 20px 20px 0 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure content takes full height and manages overflow */
+#widget-library-modal .modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    /* Hide outer scroll */
+    padding: 2rem;
+}
+
+#widget-library-modal h2 {
+    flex-shrink: 0;
+    /* Header stays fixed */
+    margin-bottom: 1.5rem;
 }
 
 #widget-library-modal.open {
@@ -1580,6 +1604,7 @@ button {
 .quick-add-btn:hover {
     transform: translateX(-50%) scale(1.1);
 }
+
 /* Custom Notifications */
 .notification-container {
     position: fixed;
@@ -1589,7 +1614,8 @@ button {
     flex-direction: column;
     gap: 10px;
     z-index: 10000;
-    pointer-events: none; /* Let clicks pass trough container */
+    pointer-events: none;
+    /* Let clicks pass trough container */
 }
 
 .notification-toast {
@@ -1605,7 +1631,8 @@ button {
     max-width: 350px;
     color: white;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    pointer-events: auto; /* Re-enable clicks on toast */
+    pointer-events: auto;
+    /* Re-enable clicks on toast */
     transform: translateX(120%);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
     opacity: 0;
@@ -1638,7 +1665,300 @@ button {
     transition-timing-function: linear;
 }
 
-.notification-toast.success .notif-progress { background: #2ecc71; }
-.notification-toast.error .notif-progress { background: #e74c3c; }
-.notification-toast.warning .notif-progress { background: #f1c40f; }
+.notification-toast.success .notif-progress {
+    background: #2ecc71;
+}
 
+.notification-toast.error .notif-progress {
+    background: #e74c3c;
+}
+
+.notification-toast.warning .notif-progress {
+    background: #f1c40f;
+}
+
+
+/* Calendar Widget Styles */
+.calendar-widget {
+    /* Special gradient or generic? Generic for now to match */
+}
+
+.calendar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.calendar-config {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+.cal-icon-large {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.cal-help {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    margin-top: 5px;
+}
+
+.cal-input {
+    width: 90%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.cal-save-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.event-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Scrollbar tweaks for event list */
+.event-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.event-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+.event-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.event-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--glass-border);
+}
+
+.event-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 45px;
+    padding-right: 8px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ev-day {
+    font-weight: bold;
+    color: var(--accent);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.ev-time {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.event-details {
+    flex: 1;
+    overflow: hidden;
+}
+
+.ev-title {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.95rem;
+}
+
+.ev-loc {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-loading,
+.cal-empty,
+.cal-error {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    gap: 10px;
+}
+
+.cal-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.cal-config-btn-overlay {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.9rem;
+    z-index: 5;
+}
+
+.calendar-widget:hover .cal-config-btn-overlay {
+    opacity: 0.5;
+}
+
+.cal-config-btn-overlay:hover {
+    opacity: 1 !important;
+}
+
+/* Voice Assistant Indicator */
+/* Voice Assistant Indicator */
+#voice-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border: 2px solid #ff4757;
+    /* RED default (Not Working/Standby) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
+    animation: pulse-red 2s infinite;
+}
+
+#voice-indicator.disabled {
+    border-color: #555;
+    background: rgba(0, 0, 0, 0.8);
+    animation: none;
+    box-shadow: none;
+    opacity: 0.5;
+}
+
+#voice-indicator.disabled .voice-icon {
+    color: #888;
+}
+
+.voice-icon {
+    font-size: 1.5rem;
+    color: #ff4757;
+    /* Red Icon */
+    z-index: 2;
+    transition: 0.3s;
+}
+
+/* Listening State (Working/Active) */
+#voice-indicator.listening {
+    border-color: #2ecc71;
+    /* GREEN */
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+    animation: none;
+    /* Stop red pulse */
+}
+
+#voice-indicator.listening .voice-icon {
+    color: #2ecc71;
+}
+
+/* Pulse Animations */
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+    }
+}
+
+/* Processing/Speaking */
+#voice-indicator.processing {
+    transform: scale(1.1);
+    background: var(--accent);
+    border-color: white;
+}
+
+#voice-indicator.processing .voice-icon {
+    color: white;
+}
+
+.voice-wave {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #2ecc71;
+    /* Green wave */
+    opacity: 0;
+    z-index: 1;
+}
+
+#voice-indicator.listening .voice-wave {
+    animation: wave-green 1.5s infinite;
+}
+
+@keyframes wave-green {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}

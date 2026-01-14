@@ -220,6 +220,29 @@ export class SpotlightManager {
         });
     }
 
+    launchBestMatch(appName) {
+        // Simple search in allApps
+        // 1. Exact match
+        let match = this.allApps.find(a => a.name.toLowerCase() === appName.toLowerCase());
+
+        // 2. Contains match
+        if (!match) {
+            match = this.allApps.find(a => a.name.toLowerCase().includes(appName.toLowerCase()));
+        }
+
+        if (match) {
+            window.electronAPI.launchApp(match.path);
+            new NotificationManager().show(`Lancement de ${match.name}...`, '🚀');
+        } else {
+            new NotificationManager().show(`Impossible de trouver "${appName}"`, '❌');
+            if (window.speechSynthesis) {
+                const u = new SpeechSynthesisUtterance(`Je n'ai pas trouvé l'application ${appName}`);
+                u.lang = 'fr-FR';
+                window.speechSynthesis.speak(u);
+            }
+        }
+    }
+
     async executeAction(result) {
         if (!result) return;
 

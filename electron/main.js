@@ -9,6 +9,7 @@ const { setupSystemHandlers } = require('./handlers/system-handler');
 const { setupWallpaperHandlers } = require('./handlers/wallpaper-handler');
 const { setupMediaHandlers } = require('./handlers/media-handler');
 const { setupSearchHandlers } = require('./handlers/search-handler');
+const { setupCalendarHandlers } = require('./handlers/calendar-handler');
 
 let splash;
 
@@ -122,6 +123,7 @@ app.whenReady().then(() => {
         setupMediaHandlers(mainWindow); // Pass the created mainWindow
     } catch (e) { console.error("Media Handler Error:", e); }
     setupSearchHandlers();
+    setupCalendarHandlers();
     checkAndCreateShortcut();
 
     app.on('activate', () => {

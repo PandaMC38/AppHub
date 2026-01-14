@@ -5,6 +5,7 @@ import { DiskWidget } from './widgets/DiskWidget.js';
 import { NotesWidget } from './widgets/NotesWidget.js';
 import { TodoWidget } from './widgets/TodoWidget.js';
 import { QuickLaunchWidget } from './widgets/QuickLaunchWidget.js';
+import { CalendarWidget } from './widgets/CalendarWidget.js';
 import { CalculatorWidget } from './widgets/CalculatorWidget.js';
 import { MediaWidget } from './widgets/MediaWidget.js';
 
@@ -27,8 +28,9 @@ export class WidgetManager {
             const data = localStorage.getItem('apphub_widgets');
             this.widgets = data ? JSON.parse(data) : [
                 { id: 'w1', type: 'time', size: 'small' },
-                { id: 'w2', type: 'weather', size: 'small' },
-                { id: 'w3', type: 'system', size: 'small' }
+                { type: 'disk', label: 'Espace Disque', icon: '💾', defaultSize: 'size-2x1' },
+                { type: 'quick-launch', label: 'Raccourcis', icon: '🚀', defaultSize: 'size-2x1' },
+                { type: 'calendar', label: 'Agenda', icon: '📅', defaultSize: 'size-2x2' }
             ];
         } catch (e) {
             this.widgets = [];
@@ -65,6 +67,7 @@ export class WidgetManager {
             case 'notes': return new NotesWidget(id, type, size, data, this);
             case 'todo': return new TodoWidget(id, type, size, data, this);
             case 'quicklaunch': return new QuickLaunchWidget(id, type, size, data, this);
+            case 'calendar': return new CalendarWidget(id, type, size, data, this);
             case 'calculator': return new CalculatorWidget(id, type, size, data, this);
             case 'media': return new MediaWidget(id, type, size, data, this);
             default: return null;
