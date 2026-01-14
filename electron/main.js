@@ -5,9 +5,10 @@ const fs = require('fs');
 // Import Handlers
 const { setupAppHandlers } = require('./handlers/app-scanner');
 const { setupSteamHandlers } = require('./handlers/steam-scanner');
-const { setupSystemHandlers } = require('./handlers/system-info');
+const { setupSystemHandlers } = require('./handlers/system-handler');
 const { setupWallpaperHandlers } = require('./handlers/wallpaper-handler');
 const { setupMediaHandlers } = require('./handlers/media-handler');
+const { setupSearchHandlers } = require('./handlers/search-handler');
 
 let splash;
 
@@ -110,14 +111,17 @@ function checkAndCreateShortcut() {
 
 app.whenReady().then(() => {
     createSplash();
+    createWindow(); // Create the main window first so `mainWindow` is available
 
     // Initialize Handlers
     setupAppHandlers();
     setupSteamHandlers();
     setupSystemHandlers();
     setupWallpaperHandlers();
-
-    createWindow();
+    try {
+        setupMediaHandlers(mainWindow); // Pass the created mainWindow
+    } catch (e) { console.error("Media Handler Error:", e); }
+    setupSearchHandlers();
     checkAndCreateShortcut();
 
     app.on('activate', () => {

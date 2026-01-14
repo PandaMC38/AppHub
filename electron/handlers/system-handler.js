@@ -3,7 +3,7 @@ const os = require('os');
 const { exec } = require('child_process');
 
 function setupSystemHandlers() {
-    // System Stats
+    // --- System Stats ---
     ipcMain.handle('get-system-stats', async () => {
         const freeMem = os.freemem();
         const totalMem = os.totalmem();
@@ -17,48 +17,61 @@ function setupSystemHandlers() {
         };
     });
 
-    // Disk Space
+    // --- Disk Space ---
     ipcMain.handle('get-disk-space', async () => {
         return new Promise((resolve) => {
             if (process.platform === 'win32') {
-                // Use PowerShell to get JSON data - cleaner and more reliable
                 const cmd = 'powershell -command "Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3} | Select-Object DeviceID, FreeSpace, Size | ConvertTo-Json"';
-
                 exec(cmd, (error, stdout) => {
                     if (error || !stdout) {
-                        console.error("Disk check error:", error);
                         resolve([]);
                         return;
                     }
                     try {
-                        // PowerShell might return a single object or array
                         const prevOutput = stdout.trim();
                         if (!prevOutput) { resolve([]); return; }
-
                         let data = JSON.parse(prevOutput);
                         if (!Array.isArray(data)) data = [data];
-
-                        const disks = data.map(d => {
-                            const free = d.FreeSpace;
-                            const size = d.Size;
-                            return {
-                                drive: d.DeviceID,
-                                free: (free / 1024 / 1024 / 1024).toFixed(1),
-                                size: (size / 1024 / 1024 / 1024).toFixed(1),
-                                percent: Math.round(((size - free) / size) * 100)
-                            };
-                        });
-
+                        const disks = data.map(d => ({
+                            drive: d.DeviceID,
+                            free: (d.FreeSpace / 1024 / 1024 / 1024).toFixed(1),
+                            size: (d.Size / 1024 / 1024 / 1024).toFixed(1),
+                            percent: Math.round(((d.Size - d.FreeSpace) / d.Size) * 100)
+                        }));
                         resolve(disks);
-                    } catch (e) {
-                        console.error("JSON parse error:", e);
-                        resolve([]);
-                    }
+                    } catch (e) { resolve([]); }
                 });
-            } else {
-                resolve([]);
-            }
+            } else { resolve([]); }
         });
+    });
+
+    // --- System Commands ---
+    ipcMain.handle('execute-system-command', async (event, command) => {
+        let cmd = '';
+        switch (command) {
+            case 'shutdown':
+                cmd = 'shutdown /s /t 0';
+                break;
+            case 'restart':
+                cmd = 'shutdown /r /t 0';
+                break;
+            case 'lock':
+                cmd = 'rundll32.exe user32.dll,LockWorkStation';
+                break;
+            case 'sleep':
+                cmd = 'rundll32.exe powrprof.dll,SetSuspendState 0,1,0';
+                break;
+            case 'empty-bin':
+                cmd = 'powershell -command "Clear-RecycleBin -Force -ErrorAction SilentlyContinue"';
+                break;
+            default:
+                return false;
+        }
+
+        exec(cmd, (error) => {
+            if (error) console.error(`Failed to execute ${command}:`, error);
+        });
+        return true;
     });
 }
 

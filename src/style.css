@@ -153,6 +153,7 @@ body {
     padding-left: 1rem;
     background: linear-gradient(135deg, #fff 0%, #aaa 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -936,6 +937,209 @@ h1 {
     text-overflow: ellipsis;
 }
 
+/* Spotlight Search */
+.spotlight-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    display: none;
+    align-items: flex-start;
+    padding-top: 12vh;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+}
+
+.spotlight-overlay.visible {
+    display: flex;
+    opacity: 1;
+}
+
+.spotlight-container {
+    width: 550px;
+    /* Much narrower */
+    max-width: 90%;
+    background: rgba(20, 20, 25, 0.85);
+    /* Slightly more opaque for better contrast */
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    /* Tighter radius */
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.3),
+        0 15px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.99);
+    transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.spotlight-overlay.visible .spotlight-container {
+    transform: scale(1);
+}
+
+.spotlight-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0.8rem 1rem;
+    /* Very compact */
+    font-size: 1.1rem;
+    /* Standard text size */
+    height: 48px;
+    /* Fixed small height */
+    font-weight: 400;
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spotlight-input::placeholder {
+    color: var(--text-muted);
+    font-weight: 300;
+    opacity: 0.5;
+}
+
+.spotlight-results {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar */
+.spotlight-results::-webkit-scrollbar {
+    width: 4px;
+}
+
+.spotlight-results::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+}
+
+.spotlight-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    /* Minimal padding */
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: background 0.05s;
+    margin: 0.2rem 0.3rem;
+    border-radius: 6px;
+    height: 36px;
+    /* Fixed compact item height */
+}
+
+.spotlight-item:hover,
+.spotlight-item.selected {
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: transparent;
+}
+
+.spotlight-item.selected {
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+
+.spotlight-icon {
+    width: 18px;
+    /* Tiny icons */
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.spotlight-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.spotlight-info {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6rem;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.spotlight-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.spotlight-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 300;
+}
+
+.spotlight-action {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    opacity: 0;
+    /* Hide by default, show on hover/select */
+    transition: opacity 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.spotlight-item:hover .spotlight-action,
+.spotlight-item.selected .spotlight-action {
+    opacity: 1;
+}
+
+.spotlight-hint {
+    padding: 0.6rem 1rem;
+    background: rgba(0, 0, 0, 0.15);
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.7rem;
+    text-align: right;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.spotlight-hint span {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-weight: normal;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: inherit;
+    margin: 0;
+}
+
+.spotlight-hint span kbd {
+    font-family: inherit;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    margin-right: 4px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
 /* Centered Settings Modal */
 .modal {
     display: block;
@@ -1094,6 +1298,7 @@ h1 {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     -webkit-appearance: none;
+    appearance: none;
     accent-color: var(--accent);
     /* Modern way to color slider */
     cursor: pointer;

@@ -8,5 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getSteamGames: () => ipcRenderer.invoke('get-steam-games'),
     selectWallpaper: () => ipcRenderer.invoke('select-wallpaper'),
     controlMedia: (cmd) => ipcRenderer.invoke('media-control', cmd),
-    onMediaUpdate: (callback) => ipcRenderer.on('media-update', (event, value) => callback(value))
+    onMediaUpdate: (callback) => ipcRenderer.on('media-update', (event, value) => callback(value)),
+    executeSystemCommand: (cmd) => ipcRenderer.invoke('execute-system-command', cmd),
+    searchFiles: (query) => ipcRenderer.invoke('search-files', query)
 });

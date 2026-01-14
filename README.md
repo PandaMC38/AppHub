@@ -53,6 +53,12 @@ Le cœur d'AppHub est son moteur de scan.
 - **Recherche Instantanée** : Filtrez des centaines d'apps en millisecondes.
 - **Menu Contextuel** : Clic-droit pour gérer les Favoris ou lancer en mode Admin.
 
+#### 🔍 Spotlight Search (Command Palette)
+Une barre de commande universelle (**`Ctrl + Space`**) style "Raycast" ou "macOS".
+- **Lanceur Ultra-Rapide** : Ouvrez apps, fichiers et recherches web.
+- **Calculatrice Intégrée** : Tapez un calcul (`12*5+10`) et voyez le résultat instantanément.
+- **Contrôle Système** : Eteindre, Redémarrer, Veille via commandes texte.
+
 #### 🎨 Personnalisation Totale
 - **Mode Édition (Drag & Drop)** : Organisez votre grille comme sur un smartphone.
 - **Redimensionnement Avancé** : Menu de sélection de taille (1x1, 1x2, 2x1, 2x2, 3x1, 3x2, 4x1, 4x2) pour une flexibilité totale.
@@ -146,6 +152,12 @@ A dynamic grid allowing you to place and resize widgets at will.
 - **Recursive Scan**: Deep scans your Start Menu to find every installed program.
 - **High-Res Icons**: Extracts original `.exe` icons.
 - **Instant Search**: Millisecond-fast filtering.
+
+#### 🔍 Spotlight Search (Command Palette)
+A universal command bar (**`Ctrl + Space`**) similar to "Raycast" or "macOS".
+- **Blazing Fast Launcher**: Open apps, files, and web searches.
+- **Integrated Calculator**: Type a math expression (`12*5+10`) to see the result instantly.
+- **System Control**: Shutdown, Restart, Sleep via text commands.
 
 #### 🎨 Customization
 - **Drag & Drop**: Reorder widgets effortlessly.

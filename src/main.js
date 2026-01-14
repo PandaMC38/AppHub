@@ -4,6 +4,7 @@
 
 import { WidgetManager } from './WidgetManager.js';
 import { ProfileManager } from './ProfileManager.js';
+import { SpotlightManager } from './SpotlightManager.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- UI Elements ---
@@ -228,6 +229,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         allApps = Array.from(unique.values());
         renderApps();
+
+        // Initialize Spotlight
+        new SpotlightManager(allApps);
     } catch (error) {
         console.error("Failed to load apps:", error);
         appGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ff6b6b; padding: 2rem;">Erreur lors du chargement des applications.</div>`;
