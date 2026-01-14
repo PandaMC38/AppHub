@@ -1,8 +1,8 @@
 import { Widget } from './Widget.js';
 
 export class CalendarWidget extends Widget {
-    constructor(id, x, y, size = 'size-2x2', data = {}, onDelete) {
-        super(id, x, y, size, data, onDelete);
+    constructor(id, type, size, data = {}, manager) {
+        super(id, type, size, data, manager);
         this.type = 'calendar';
         this.title = 'Agenda';
         this.icon = '📅';
@@ -46,7 +46,8 @@ export class CalendarWidget extends Widget {
             const url = input.value.trim();
             if (url) {
                 this.icsUrl = url;
-                this.save();
+                this.data.icsUrl = url;
+                this.manager.save();
                 this.renderContent(container);
                 this.loadEvents();
             }
@@ -77,7 +78,8 @@ export class CalendarWidget extends Widget {
                 if (confirm("Changer l'URL du calendrier ?")) {
                     this.icsUrl = '';
                     this.events = [];
-                    this.save();
+                    this.data.icsUrl = '';
+                    this.manager.save();
                     this.renderContent(this.element.querySelector('.widget-content'));
                 }
             };
@@ -120,7 +122,7 @@ export class CalendarWidget extends Widget {
                 if (this.events.length === 0) {
                     container.innerHTML = `<div class="cal-empty">Pas d'événements prévus 🎉<br><button class="cal-reset-link" style="margin-top:10px;background:var(--glass-bg);border:1px solid var(--glass-border);color:white;cursor:pointer;padding:5px 10px;border-radius:4px;">Changer lien</button></div>`;
                     const btn = container.querySelector('.cal-reset-link');
-                    if (btn) btn.onclick = () => { this.icsUrl = ''; this.save(); this.renderContent(container); };
+                    if (btn) btn.onclick = () => { this.icsUrl = ''; this.data.icsUrl = ''; this.manager.save(); this.renderContent(container); };
                 } else {
                     // Clear loading state and render real events
                     container.innerHTML = '';
@@ -131,20 +133,16 @@ export class CalendarWidget extends Widget {
             console.error("Failed to load events", e);
             const container = this.element.querySelector('.widget-content');
             if (container) {
-                container.innerHTML = `<div class="cal-error">Erreur de chargement <br> <small>Vérifiez l'URL</small></div>`;
+                container.innerHTML = `<div class="cal-error">Erreur de chargement <br> <small>${e.message || 'Vérifiez l\'URL'}</small></div>`;
                 setTimeout(() => {
                     this.icsUrl = '';
-                    this.save();
+                    this.data.icsUrl = '';
+                    this.manager.save();
                     this.renderContent(container);
                 }, 3000);
             }
         }
     }
 
-    toJSON() {
-        return {
-            ...super.toJSON(),
-            data: { icsUrl: this.icsUrl }
-        };
-    }
+
 }
