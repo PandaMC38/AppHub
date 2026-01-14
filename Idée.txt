@@ -1,0 +1,46 @@
+🚀 10 Idées d'Amélioration pour AppHub
+Voici des propositions pour passer votre dashboard au niveau supérieur :
+
+🎵 Multimédia & Divertissement
+Widget Spotify / YouTube Music (Vrai Intégration)
+
+Actuellement : C'est juste visuel.
+Idée : Connecter l'API Spotify pour afficher la vraie pochette, le titre en cours et contrôler la musique (Play/Pause/Next) depuis AppHub.
+Mode "Cinéma" / Ambiance
+
+Un bouton qui diminue la luminosité de l'interface, cache les icônes du bureau (via Windows API) et lance une playlist calme.
+⚡ Productivité
+Widget Pomodoro (Concentration)
+
+Un minuteur 25min / 5min pour travailler efficacement.
+Notification sonore à la fin.
+Intégration Calendrier (Agenda)
+
+Afficher vos prochains rendez-vous (Google Calendar ou Outlook) dans un widget "Planning".
+Recherche "Spotlight" Avancée
+
+Actuellement : Filtre les apps.
+Idée : Une barre de recherche centrale (Ctrl+Space) qui permet de :
+Calculer (2+2)
+Chercher sur Google directement
+Chercher des fichiers locaux
+Lancer des commandes système (ex: "Eteindre")
+🎨 Personnalisation
+Store de Thèmes (Presets)
+
+Sauvegarder vos configurations (Couleur + Wallpaper + Disposition) sous des noms (ex: "Mode Nuit", "Gaming", "Travail").
+Passer de l'un à l'autre en un clic.
+Pages Multiples (Carousel)
+
+Avoir plusieurs écrans de widgets (comme sur smartphone).
+Page 1 : Travail (Notes, Agenda). Page 2 : Détente (Météo, Musique, Steam).
+🛠️ Système
+Moniteur Réseau (Net Speed)
+
+Un widget qui affiche votre vitesse de téléchargement/upload en temps réel.
+Nettoyeur de Fichiers (Cleaner)
+
+Un bouton pour vider la corbeille et les fichiers temporaires de Windows pour gagner de la place (%TEMP%).
+Assistant AI Local
+
+Un petit widget de chat pour poser des questions rapides (connecté à une API ou juste des commandes prédéfinies).

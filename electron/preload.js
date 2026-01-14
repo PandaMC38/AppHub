@@ -6,5 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getSystemStats: () => ipcRenderer.invoke('get-system-stats'),
     getDiskSpace: () => ipcRenderer.invoke('get-disk-space'),
     getSteamGames: () => ipcRenderer.invoke('get-steam-games'),
-    selectWallpaper: () => ipcRenderer.invoke('select-wallpaper')
+    selectWallpaper: () => ipcRenderer.invoke('select-wallpaper'),
+    controlMedia: (cmd) => ipcRenderer.invoke('media-control', cmd),
+    onMediaUpdate: (callback) => ipcRenderer.on('media-update', (event, value) => callback(value))
 });
