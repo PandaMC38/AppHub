@@ -137,10 +137,14 @@ function setupAppHandlers() {
                     // Step 1: Resolve the shortcut chain
                     const details = resolveShortcutChain(appItem.path);
 
-                    // Check Steam
-                    if (details.target.toLowerCase().includes('steam.exe') || (details.args && details.args.includes('steam://'))) {
+                    // Check Steam Games (Filter out shortcuts that launch games, but KEEP Steam Client)
+                    // Common Steam shortcut: "C:\...\Steam.exe" -applaunch <id>
+                    // Or URL shortcut: steam://rungameid/<id>
+                    if (details.args && (details.args.includes('steam://') || details.args.includes('-applaunch'))) {
                         isSteam = true;
                     }
+                    // Previously we filtered ALL steam.exe, which hid the main Steam app. Now we only filter games
+                    // because we have a dedicated steam-scanner for games.
 
                     if (isSteam) return null;
 

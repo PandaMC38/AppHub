@@ -90,10 +90,18 @@ function setupSteamHandlers() {
 
                                 let icon = null;
 
-                                // Strategy 1: Steam Library Cache
+                                // Strategy 1: Steam Library Cache (Most reliable for "The Good Logo")
+                                // Common paths: 
+                                // - <steam>/appcache/librarycache/<appid>_icon.jpg
+                                // - <steam>/steam/games/<appid>.ico (legacy)
+
                                 const cachePath = path.join(steamPath, 'appcache', 'librarycache', `${appid}_icon.jpg`);
+                                const legacyPath = path.join(steamPath, 'steam', 'games', `${appid}.ico`);
+
                                 if (fs.existsSync(cachePath)) {
                                     icon = `file://${cachePath.replace(/\\/g, '/')}`;
+                                } else if (fs.existsSync(legacyPath)) {
+                                    icon = `file://${legacyPath.replace(/\\/g, '/')}`;
                                 }
                                 // Strategy 2: Find Executable in Install Dir
                                 else if (installDir) {
