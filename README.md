@@ -58,6 +58,8 @@ Le cœur d'AppHub est son moteur de scan.
 - **Redimensionnement Avancé** : Menu de sélection de taille (1x1, 1x2, 2x1, 2x2, 3x1, 3x2, 4x1, 4x2) pour une flexibilité totale.
 - **Système de Thèmes** : Changez la couleur d'accentuation (Accent Color) et l'opacité des cartes.
 - **Fonds d'écran Vivants** : Support natif des fichiers `.mp4` pour des arrière-plans vidéo, ou images classiques.
+- **Store de Thèmes (Presets)** : Sauvegardez et chargez instantanément vos configurations complètes (Widgets + Couleurs + Fond d'écran). Ex: "Mode Travail", "Gaming", "Soirée".
+- **Interface de Paramètres Moderne** : Menu centré avec prévisualisation en direct des couleurs et de la transparence.
 
 ---
 
@@ -149,7 +151,8 @@ A dynamic grid allowing you to place and resize widgets at will.
 - **Drag & Drop**: Reorder widgets effortlessly.
 - **Advanced Resizing**: Size selection menu (1x1, 1x2, 2x1, 2x2, 3x1, 3x2, 4x1, 4x2) for complete flexibility.
 - **Live Wallpapers**: Native `.mp4` video background support.
-- **Theming**: Custom accent colors and opacity settings.
+- **Theme Store (Presets)**: Save and load full configurations (Widgets + Colors + Wallpaper) instantly.
+- **Modern Settings UI**: Centered modal with live previews for color and opacity changes.
 
 ---
 

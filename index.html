@@ -163,23 +163,60 @@
 
             <div class="setting-item">
                 <label>Couleur du thème</label>
-                <input type="color" id="accent-color-input" value="#646cff" class="settings-input">
+                <div class="setting-row">
+                    <input type="color" id="accent-color-input" value="#646cff" class="settings-input">
+                    <div id="accent-preview" class="color-preview"></div>
+                </div>
             </div>
 
             <div class="setting-item">
                 <label>Taille de l'interface</label>
-                <input type="range" id="size-input" min="100" max="250" value="140" class="settings-range">
+                <div class="setting-row">
+                    <input type="range" id="size-input" min="100" max="250" value="140" class="settings-range">
+                    <span id="size-value"
+                        style="width:40px; text-align:right; font-family:monospace; color:var(--text-muted);">140</span>
+                </div>
             </div>
 
             <div class="setting-item">
                 <label>Transparence des cartes</label>
-                <input type="range" id="opacity-input" min="0" max="50" value="5" class="settings-range">
+                <div class="setting-row">
+                    <input type="range" id="opacity-input" min="0" max="50" value="5" class="settings-range">
+                    <div id="opacity-preview" class="opacity-preview">Test</div>
+                </div>
             </div>
 
             <div class="setting-item">
                 <label>Fond d'écran</label>
                 <button id="change-wallpaper-btn">Choisir une image...</button>
                 <button id="reset-wallpaper-btn">Réinitialiser</button>
+            </div>
+
+            <!-- Theme Store Section -->
+            <div class="setting-item"
+                style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <h3 style="margin-bottom: 1rem;">Thèmes & Presets</h3>
+
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <input type="text" id="new-profile-name" placeholder="Nom du thème..." class="settings-input"
+                        style="flex: 1;">
+                    <button id="save-profile-btn" style="background: var(--accent); white-space: nowrap;">💾
+                        Sauvegarder</button>
+                </div>
+
+                <div id="profiles-list" style="
+                    background: rgba(0,0,0,0.2); 
+                    border-radius: 8px; 
+                    padding: 0.5rem; 
+                    max-height: 150px; 
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                ">
+                    <div style="opacity: 0.5; text-align: center; padding: 1rem; font-size: 0.9rem;">Aucun thème
+                        sauvegardé</div>
+                </div>
             </div>
 
             <div class="setting-item" style="margin-top: 30px; text-align: center;">
