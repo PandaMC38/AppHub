@@ -9,6 +9,9 @@ import { CalendarWidget } from './widgets/CalendarWidget.js';
 import { CalculatorWidget } from './widgets/CalculatorWidget.js';
 import { MediaWidget } from './widgets/MediaWidget.js';
 
+import { WorkspaceManager } from './WorkspaceManager.js';
+// ... imports
+
 export class WidgetManager {
     constructor(gridElement, notificationManager) {
         this.grid = gridElement;
@@ -17,45 +20,46 @@ export class WidgetManager {
         this.activeWidgetInstances = new Map(); // id -> instance
         this.isEditMode = false;
 
-        // Initial Load
-        this.load();
+        // Initialize Workspace Manager
+        this.workspaceManager = new WorkspaceManager(this);
+
+        // Initial Load via Workspace Manager
+        // Note: WorkspaceManager calls load() in constructor which might be too early if passed 'this' is not fully ready
+        // But since we pass 'this', it can reference us.
+        // We will trigger the first render here.
+        const currentWs = this.workspaceManager.getCurrentWorkspace();
+        this.widgets = currentWs.widgets || [];
 
         // Setup Sortable if available globally
         this.initSortable();
     }
 
-    load() {
-        try {
-            const data = localStorage.getItem('apphub_widgets');
-            this.widgets = data ? JSON.parse(data) : [
-                { id: 'w1', type: 'time', size: 'small' },
-                { type: 'disk', label: 'Espace Disque', icon: '💾', defaultSize: 'size-2x1' },
-                { type: 'quick-launch', label: 'Raccourcis', icon: '🚀', defaultSize: 'size-2x1' },
-                { type: 'calendar', label: 'Agenda', icon: '📅', defaultSize: 'size-2x2' }
-            ];
-        } catch (e) {
-            this.widgets = [];
-        }
+    // Called by WorkspaceManager to load a specific set of widgets
+    loadWidgets(widgetsConfig) {
+        this.widgets = widgetsConfig || [];
+        this.render();
     }
 
-    save() {
-        // We save the configuration of widgets (id, type, size, data)
-        const toSave = this.widgets.map(w => {
+    // Called by WorkspaceManager to get current config for saving
+    getWidgetsConfig() {
+        return this.widgets.map(w => {
             const instance = this.activeWidgetInstances.get(w.id);
             if (instance) {
-                // Update data from instance if needed (though instance.data IS the ref usually)
                 return {
                     id: w.id,
                     type: w.type,
-                    size: instance.size, // Update with new size from instance
+                    size: instance.size,
                     data: w.data
                 };
             }
-
             return w;
         });
-        this.widgets = toSave;
-        localStorage.setItem('apphub_widgets', JSON.stringify(toSave));
+    }
+
+    save() {
+        // Delegate saving to WorkspaceManager
+        // It will call back getWidgetsConfig() to get latest state
+        this.workspaceManager.save();
     }
 
     createInstance(config) {

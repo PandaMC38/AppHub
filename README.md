@@ -53,6 +53,12 @@ Le cœur d'AppHub est son moteur de scan.
 - **Recherche Instantanée** : Filtrez des centaines d'apps en millisecondes.
 - **Menu Contextuel** : Clic-droit pour gérer les Favoris ou lancer en mode Admin.
 
+#### 🏢 Smart Workspaces (Contextes)
+Organisez votre vie numérique en espaces distincts (Travail, Jeu, Personnel).
+- **Switcher Rapide** : Basculez d'un contexte à l'autre en un clic depuis la barre latérale.
+- **Automation** : Configurez des règles pour chaque espace (ex: "Lancer Steam + Fermer Outlook" quand je passe en mode "Gaming").
+- **Layouts Indépendants** : Chaque workspace possède sa propre grille de widgets.
+
 #### 🔍 Spotlight Search (Command Palette)
 Une barre de commande universelle (**`Ctrl + Space`**) style "Raycast" ou "macOS".
 - **Lanceur Ultra-Rapide** : Ouvrez apps, fichiers et recherches web.
@@ -165,6 +171,12 @@ A dynamic grid allowing you to place and resize widgets at will.
 - **Recursive Scan**: Deep scans your Start Menu to find every installed program.
 - **High-Res Icons**: Extracts original `.exe` icons.
 - **Instant Search**: Millisecond-fast filtering.
+
+#### 🏢 Smart Workspaces
+Organize your digital life into distinct spaces (Work, Gaming, Personal).
+- **Quick Switcher**: Toggle between contexts instantly from the sidebar.
+- **Automation**: Set rules for each space (e.g., "Launch Steam + Kill Outlook" when entering "Gaming" mode).
+- **Independent Layouts**: Each workspace has its own unique widget grid.
 
 #### 🔍 Spotlight Search (Command Palette)
 A universal command bar (**`Ctrl + Space`**) similar to "Raycast" or "macOS".

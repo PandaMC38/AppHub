@@ -10,6 +10,7 @@ const { setupWallpaperHandlers } = require('./handlers/wallpaper-handler');
 const { setupMediaHandlers } = require('./handlers/media-handler');
 const { setupSearchHandlers } = require('./handlers/search-handler');
 const { setupCalendarHandlers } = require('./handlers/calendar-handler');
+const { setupWorkspaceHandlers } = require('./handlers/workspace-handler');
 
 let splash;
 
@@ -124,6 +125,7 @@ app.whenReady().then(() => {
     } catch (e) { console.error("Media Handler Error:", e); }
     setupSearchHandlers();
     setupCalendarHandlers();
+    setupWorkspaceHandlers();
     checkAndCreateShortcut();
 
     app.on('activate', () => {

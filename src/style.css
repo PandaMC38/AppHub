@@ -2269,3 +2269,65 @@ body.dragging-active .widget-drawer {
     grid-column: 1 / -1;
     min-height: 150px;
 }
+
+/* Workspace Switcher */
+.workspace-switcher {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.ws-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.ws-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.ws-btn.active {
+    background: rgba(100, 108, 255, 0.15);
+    color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+.ws-icon {
+    font-size: 1.1rem;
+}
+
+.sidebar.collapsed .ws-label {
+    display: none;
+}
+
+.sidebar.collapsed .ws-btn {
+    justify-content: center;
+    padding: 0.8rem 0;
+}
+
+.ws-add-btn {
+    padding: 0.5rem;
+    border: 1px dashed var(--glass-border);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    justify-content: center;
+}
+
+.ws-add-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}

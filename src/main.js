@@ -90,6 +90,94 @@ document.addEventListener('DOMContentLoaded', async () => {
     const widgetManager = new WidgetManager(gridEl, notifications);
     widgetManager.render();
 
+    // --- Workspace Switcher UI ---
+    const workspaceSwitcher = document.getElementById('workspace-switcher');
+
+    function renderWorkspaces() {
+        if (!workspaceSwitcher) return;
+        workspaceSwitcher.innerHTML = '';
+
+        const workspaces = widgetManager.workspaceManager.getWorkspaces();
+        const activeId = widgetManager.workspaceManager.activeWorkspaceId;
+
+        workspaces.forEach(ws => {
+            const btn = document.createElement('button');
+            btn.className = `ws-btn ${ws.id === activeId ? 'active' : ''}`;
+            btn.title = ws.name;
+            btn.innerHTML = `
+                <span class="ws-icon">${ws.icon || '📦'}</span>
+                <span class="ws-label">${ws.name}</span>
+            `;
+
+            btn.onclick = () => {
+                if (ws.id !== activeId) {
+                    widgetManager.workspaceManager.switchWorkspace(ws.id);
+                    renderWorkspaces();
+                    notifications.show(`Espace "${ws.name}" activé`, 'success');
+                }
+            };
+
+            // Improved Button Inner HTML with Gear
+            btn.innerHTML = `
+                <div style="display:flex; align-items:center; gap:0.8rem; flex:1;">
+                    <span class="ws-icon">${ws.icon || '📦'}</span>
+                    <span class="ws-label">${ws.name}</span>
+                </div>
+                <div class="ws-actions" style="opacity:0.5; font-size:0.8rem;">⚙️</div>
+            `;
+
+            // Handle Gear Click specifically
+            const gear = btn.querySelector('.ws-actions');
+            gear.onclick = (e) => {
+                e.stopPropagation(); // Don't switch workspace
+                openWorkspaceConfig(ws);
+            };
+
+            // Context Menu for Deletion
+            gear.oncontextmenu = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (ws.id === 'default') return;
+                if (confirm(`Supprimer l'espace "${ws.name}" ?`)) {
+                    widgetManager.workspaceManager.deleteWorkspace(ws.id);
+                    renderWorkspaces();
+                    notifications.show('Espace supprimé', 'info');
+                }
+            };
+
+            // Keep button right click as fallback or just nothing
+            btn.oncontextmenu = (e) => e.preventDefault();
+
+            workspaceSwitcher.appendChild(btn);
+        });
+
+        // Add "New Workspace" button
+        const addBtn = document.createElement('button');
+        addBtn.className = 'ws-btn ws-add-btn';
+        addBtn.title = "Créer un espace";
+        addBtn.innerHTML = `
+            <span class="ws-icon">➕</span>
+            <span class="ws-label">Nouvel Espace</span>
+        `;
+        addBtn.onclick = () => {
+            const name = prompt("Nom du nouvel espace (ex: Gaming):");
+            if (name) {
+                const icon = prompt("Un emoji pour l'icône ?", "🎮");
+                widgetManager.workspaceManager.createWorkspace(name, icon || '📁');
+                renderWorkspaces();
+                notifications.show('Espace créé !', 'success');
+            }
+        };
+        workspaceSwitcher.appendChild(addBtn);
+    }
+
+    // Initial Render
+    renderWorkspaces();
+
+    // List for global event if needed, but we re-render on click mainly.
+    // If we wanted to react to external changes:
+    // window.addEventListener('workspace-changed', () => renderWorkspaces());
+
     // 3. Profile Manager (for Themes)
     const profileManager = new ProfileManager(widgetManager, (prefs) => {
         // Callback when a profile is loaded -> Update UI
@@ -497,4 +585,47 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderApps(searchBar.value.toLowerCase());
         }
     });
+
+    // --- Config Modal Logic ---
+    const wsModal = document.getElementById('workspace-modal');
+    const wsTitle = document.getElementById('ws-modal-title');
+    const wsLaunch = document.getElementById('ws-launch-rules');
+    const wsKill = document.getElementById('ws-kill-rules');
+    const wsSave = document.getElementById('ws-save-btn');
+    const wsCancel = document.getElementById('ws-cancel-btn');
+    let currentConfigWsId = null;
+
+    function openWorkspaceConfig(ws) {
+        currentConfigWsId = ws.id;
+        wsTitle.textContent = `Config: ${ws.name}`;
+
+        // Load existing rules
+        const rules = ws.rules || { launch: [], kill: [] };
+        wsLaunch.value = (rules.launch || []).join('\n');
+        wsKill.value = (rules.kill || []).join(', '); // Comma separated for kill
+
+        wsModal.style.display = 'block';
+    }
+
+    if (wsCancel) wsCancel.onclick = () => wsModal.style.display = 'none';
+
+    if (wsSave) wsSave.onclick = () => {
+        if (!currentConfigWsId) return;
+
+        // Parse Inputs
+        const launch = wsLaunch.value.split('\n').map(l => l.trim()).filter(l => l);
+        const kill = wsKill.value.split(',').map(k => k.trim()).filter(k => k);
+
+        // Save
+        widgetManager.workspaceManager.updateRules(currentConfigWsId, { launch, kill });
+
+        // Close
+        wsModal.style.display = 'none';
+        notifications.show('Règles mises à jour', 'success');
+    };
+
+    // Close modal when clicking outside
+    window.onclick = (e) => {
+        if (e.target === wsModal) wsModal.style.display = 'none';
+    };
 });
