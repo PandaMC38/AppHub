@@ -10,8 +10,9 @@ import { CalculatorWidget } from './widgets/CalculatorWidget.js';
 import { MediaWidget } from './widgets/MediaWidget.js';
 
 export class WidgetManager {
-    constructor(gridElement) {
+    constructor(gridElement, notificationManager) {
         this.grid = gridElement;
+        this.notifications = notificationManager;
         this.widgets = [];
         this.activeWidgetInstances = new Map(); // id -> instance
         this.isEditMode = false;
@@ -94,22 +95,22 @@ export class WidgetManager {
         this.updateEditMode();
     }
 
-    addWidget(type) {
-        const newWidget = {
-            id: 'w' + Date.now(),
-            type: type,
-            size: (type === 'media' ? 'large' : 'small'),
-            data: {}
-        };
-        this.widgets.push(newWidget);
-        this.save();
-        this.render();
-    }
-
     removeWidget(id) {
+        const backup = [...this.widgets];
         this.widgets = this.widgets.filter(w => w.id !== id);
         this.save();
         this.render();
+
+        if (this.notifications) {
+            this.notifications.show('Widget supprimé', 'info', 5000, {
+                label: 'Annuler',
+                callback: () => {
+                    this.widgets = backup;
+                    this.save();
+                    this.render();
+                }
+            });
+        }
     }
 
     toggleEditMode(force) {
@@ -125,22 +126,103 @@ export class WidgetManager {
 
     initSortable() {
         if (typeof Sortable !== 'undefined') {
-            new Sortable(this.grid, {
+            // 1. Grid Sortable (The receiver)
+            this.sortable = new Sortable(this.grid, {
+                group: 'shared-widgets', // Allow sharing between lists
                 animation: 150,
-                handle: '.widget', // In edit mode usually, but here always draggable by body
-                disabled: false,
+                handle: '.widget',
+                draggable: '.widget', // Only widgets are draggable
                 ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onStart: () => {
+                    document.body.classList.add('dragging-active');
+                    this.grid.classList.add('highlight-dropzone');
+                },
                 onEnd: (evt) => {
-                    const newOrderIds = Array.from(this.grid.children).map(el => el.dataset.id);
-                    const reordered = [];
-                    newOrderIds.forEach(id => {
-                        const w = this.widgets.find(x => x.id === id);
-                        if (w) reordered.push(w);
-                    });
-                    this.widgets = reordered;
-                    this.save();
+                    document.body.classList.remove('dragging-active');
+                    this.grid.classList.remove('highlight-dropzone');
+                    // Reordering within the grid
+                    this.updateWidgetOrder();
+                },
+                onAdd: (evt) => {
+                    document.body.classList.remove('dragging-active');
+                    this.grid.classList.remove('highlight-dropzone');
+
+                    // Item dropped from Library!
+                    const itemEl = evt.item;
+                    const type = itemEl.dataset.type;
+                    const newIndex = evt.newIndex;
+
+                    // Remove the DOM element created by Sortable (it's just a clone of the library item)
+                    if (itemEl && itemEl.parentNode) {
+                        itemEl.parentNode.removeChild(itemEl);
+                    }
+
+                    // Create the real widget at this index
+                    if (type) {
+                        this.addWidget(type, newIndex);
+                    }
                 }
             });
+
+            // 2. Library Sortable (The source)
+            const libraryList = document.getElementById('widget-library-list');
+            if (libraryList) {
+                new Sortable(libraryList, {
+                    group: {
+                        name: 'shared-widgets',
+                        pull: 'clone', // Clone items from here
+                        put: false // Don't let items be dropped back here
+                    },
+                    sort: false, // Don't allow sorting in the library
+                    animation: 150,
+                    draggable: '.drawer-item',
+                    onStart: () => {
+                        document.body.classList.add('dragging-active');
+                        this.grid.classList.add('highlight-dropzone');
+                    },
+                    onEnd: () => {
+                        document.body.classList.remove('dragging-active');
+                        this.grid.classList.remove('highlight-dropzone');
+                    }
+                });
+            }
         }
+    }
+
+    updateWidgetOrder() {
+        const newOrderIds = Array.from(this.grid.children).map(el => el.dataset.id).filter(id => id);
+        const reordered = [];
+        newOrderIds.forEach(id => {
+            const w = this.widgets.find(x => x.id === id);
+            if (w) reordered.push(w);
+        });
+
+        // Add any missing widgets (fallback)
+        this.widgets.forEach(w => {
+            if (!newOrderIds.includes(w.id)) reordered.push(w);
+        });
+
+        this.widgets = reordered;
+        this.save();
+    }
+
+    addWidget(type, index = null) {
+        const newWidget = {
+            id: 'w' + Date.now(),
+            type: type,
+            size: (type === 'media' ? 'size-2x1' : 'size-1x1'), // Better defaults
+            data: {}
+        };
+
+        // If index is provided, insert at that position
+        if (index !== null && index >= 0 && index <= this.widgets.length) {
+            this.widgets.splice(index, 0, newWidget);
+        } else {
+            this.widgets.push(newWidget);
+        }
+
+        this.save();
+        this.render();
     }
 }

@@ -23,13 +23,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleBtn = document.createElement('button');
 
     // Controls
-    const editModeBtn = document.getElementById('edit-mode-btn');
-    const libModal = document.getElementById('widget-library-modal');
-    const closeLibBtn = document.getElementById('close-lib-btn');
-    const libItems = document.querySelectorAll('.lib-item');
+    // Controls
+    const addWidgetBtn = document.getElementById('add-widget-btn');
+    const widgetDrawer = document.getElementById('widget-drawer');
+    const closeDrawerBtn = document.getElementById('close-drawer-btn');
+
+    // Settings
     const settingsBtn = document.getElementById('settings-btn');
-    const settingsModal = document.getElementById('settings-modal');
+    const settingsDrawer = document.getElementById('settings-drawer');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
 
     // Settings Inputs
     const usernameInput = document.getElementById('username-input');
@@ -69,10 +72,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleBtn.innerHTML = sidebar.classList.contains('collapsed') ? '▶' : '◀';
     };
 
-    // 2. Widget Manager
-    const widgetManager = new WidgetManager(gridEl);
-    widgetManager.render();
+    // 2. Notifications & Error Handling
     const notifications = new NotificationManager();
+
+    // Replace native alerts with Toasts
+    window.onerror = function (message, source, lineno, colno, error) {
+        console.error("Global Error:", message, error); // Keep technical log for devs
+        notifications.show(`Oups ! Une erreur est survenue.`, 'error', 5000);
+        return true;
+    };
+    window.addEventListener('unhandledrejection', function (event) {
+        console.error("Async Error:", event.reason);
+        notifications.show(`Oups ! Une erreur inattendue s'est produite.`, 'error', 5000);
+    });
+
+    // 3. Widget Manager
+    const widgetManager = new WidgetManager(gridEl, notifications);
+    widgetManager.render();
 
     // 3. Profile Manager (for Themes)
     const profileManager = new ProfileManager(widgetManager, (prefs) => {
@@ -310,6 +326,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Search ---
     searchBar.addEventListener('input', (e) => renderApps(e.target.value.toLowerCase()));
 
+    if (clearSearchBtn) {
+        clearSearchBtn.onclick = () => {
+            searchBar.value = '';
+            renderApps('');
+            searchBar.focus();
+        };
+    }
+
     // --- Category Navigation ---
     const navBtns = document.querySelectorAll('.nav-btn[data-category]');
     navBtns.forEach(btn => {
@@ -320,47 +344,55 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Update Filter
             currentCategory = btn.dataset.category;
+
+            // Update Header Title based on category
+            const userName = localStorage.getItem('apphub_username') || "Utilisateur";
+            switch (currentCategory) {
+                case 'favorites':
+                    welcomeTitle.textContent = "Mes Favoris ⭐";
+                    break;
+                case 'recent':
+                    welcomeTitle.textContent = "Récemment ouverts 🕒";
+                    break;
+                case 'top':
+                    welcomeTitle.textContent = "Les plus populaires 🔥";
+                    break;
+                case 'all':
+                default:
+                    welcomeTitle.textContent = `Bonjour, ${userName}`;
+                    break;
+            }
+
             renderApps(searchBar.value.toLowerCase());
         };
     });
 
     // --- Event Listeners ---
 
-    // Edit Mode
-    editModeBtn.onclick = () => {
-        const isActive = widgetManager.toggleEditMode();
-        if (isActive) {
-            libModal.classList.add('open');
-            editModeBtn.style.color = 'var(--accent)';
-        } else {
-            libModal.classList.remove('open');
-            editModeBtn.style.color = 'white';
-        }
+    // Toggle Drawer
+    addWidgetBtn.onclick = () => {
+        settingsDrawer.classList.remove('open'); // Close settings if open
+        widgetDrawer.classList.add('open');
+        // Optional: Auto-enable edit mode when opening drawer
+        widgetManager.toggleEditMode(true);
     };
 
-    closeLibBtn.onclick = () => {
-        libModal.classList.remove('open');
-        widgetManager.toggleEditMode(false);
-        editModeBtn.style.color = 'white';
+    closeDrawerBtn.onclick = () => {
+        widgetDrawer.classList.remove('open');
+        // Optional: Disable edit mode on close? 
+        // widgetManager.toggleEditMode(false);
     };
-
-    // Add Widget
-    libItems.forEach(item => {
-        item.onclick = () => {
-            widgetManager.addWidget(item.dataset.type);
-            libModal.classList.remove('open');
-        };
-    });
 
     // Settings
     settingsBtn.onclick = () => {
-        settingsModal.classList.add('open');
+        widgetDrawer.classList.remove('open'); // Close widgets if open
+        settingsDrawer.classList.add('open');
         // Init previews
         updatePreviews();
     };
 
     closeSettingsBtn.onclick = () => {
-        settingsModal.classList.remove('open');
+        settingsDrawer.classList.remove('open');
     };
 
     // Helper to update previews without saving
@@ -405,7 +437,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         welcomeTitle.textContent = `Bienvenue, ${usernameInput.value}`;
 
-        settingsModal.classList.remove('open');
+        settingsDrawer.classList.remove('open');
         notifications.show('Paramètres sauvegardés !', 'success');
     };
 
