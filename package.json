@@ -1,19 +1,43 @@
 {
-  "name": "teste",
-  "version": "1.0.0",
-  "description": "",
+  "name": "app-hub",
+  "productName": "AppHub",
+  "version": "1.2.0",
+  "description": "Dashboard de productivité ultime",
   "main": "electron/main.js",
+  "author": "Antigravity",
   "scripts": {
     "dev": "vite",
     "start": "electron .",
-    "build": "vite build"
+    "build": "vite build",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.apphub.desktop",
+    "win": {
+      "target": "nsis",
+      "icon": "src/1-77a8dacb.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "index.html",
+      "package.json"
+    ]
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
     "electron": "^39.2.7",
+    "electron-builder": "^24.9.1",
     "vite": "^7.3.1"
   },
   "dependencies": {
