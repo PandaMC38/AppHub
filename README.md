@@ -14,6 +14,8 @@
     <b>Un Dashboard de Productivité Moderne pour Windows</b><br>
     Centralisez vos applications, surveillez votre système et organisez votre vie numérique avec élégance.
     <br><br>
+    <a href="CHANGELOG.md"><b>📜 Voir les Dernières Mises à Jour (CHANGELOG)</b></a>
+    <br><br>
     <a href="#-français">🇫🇷 Documentation en Français</a> •
     <a href="#-english">🇬🇧 English Documentation</a>
   </p>
