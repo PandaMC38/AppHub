@@ -1,4 +1,5 @@
 const { ipcMain, app, shell, nativeImage } = require('electron');
+const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const fsPromises = require('fs').promises;
@@ -34,11 +35,65 @@ function setupAppHandlers() {
             }
         }
 
+        // Helper: Async UWP Scan (PowerShell)
+        async function scanUwpApps() {
+            return new Promise((resolve) => {
+                const scriptPath = path.join(__dirname, '..', 'scripts', 'get-uwp-apps.ps1');
+                const iconDir = path.join(app.getPath('userData'), 'uwp-icons');
+
+                // Spawn PowerShell
+                const ps = spawn('powershell.exe', [
+                    '-NoProfile',
+                    '-ExecutionPolicy', 'Bypass',
+                    '-File', scriptPath,
+                    '-IconFolder', iconDir
+                ]);
+
+                let dataString = '';
+
+                ps.stdout.on('data', (data) => {
+                    dataString += data.toString();
+                });
+
+                ps.stderr.on('data', (data) => {
+                    // console.error('PS Error:', data.toString());
+                });
+
+                ps.on('close', (code) => {
+                    if (code !== 0) {
+                        console.log('UWP scan exited with code', code);
+                        resolve([]);
+                        return;
+                    }
+                    try {
+                        const results = JSON.parse(dataString);
+                        // Ensure input is array (PowerShell might return single object if only 1 app found)
+                        const arrayResults = Array.isArray(results) ? results : [results];
+                        resolve(arrayResults.map(u => ({
+                            name: u.name,
+                            path: u.path,
+                            iconPath: u.icon, // Special property we'll use in the loop
+                            isUwp: true
+                        })));
+                    } catch (e) {
+                        console.error('Failed to parse UWP JSON:', e);
+                        resolve([]);
+                    }
+                });
+            });
+        }
+
+
         console.log("Starting async app scan...");
-        await Promise.all([
+        const [_, __, uwpApps] = await Promise.all([
             scanDirectory(commonStartMenu),
-            scanDirectory(userStartMenu)
+            scanDirectory(userStartMenu),
+            scanUwpApps() // Run parallel
         ]);
+
+        if (uwpApps && uwpApps.length > 0) {
+            apps.push(...uwpApps);
+        }
         console.log(`Found ${apps.length} apps. Processing icons...`);
 
         // Fetch icons (Parallelized with limit)
@@ -133,72 +188,79 @@ function setupAppHandlers() {
                 let finalIconPath = null;
                 let isSteam = false;
 
-                try {
-                    // Step 1: Resolve the shortcut chain
-                    const details = resolveShortcutChain(appItem.path);
-
-                    // Check Steam Games (Filter out shortcuts that launch games, but KEEP Steam Client)
-                    // Common Steam shortcut: "C:\...\Steam.exe" -applaunch <id>
-                    // Or URL shortcut: steam://rungameid/<id>
-                    if (details.args && (details.args.includes('steam://') || details.args.includes('-applaunch'))) {
-                        isSteam = true;
+                if (appItem.isUwp) {
+                    if (appItem.iconPath) {
+                        iconObj = await loadIcon(appItem.iconPath);
                     }
-                    // Previously we filtered ALL steam.exe, which hid the main Steam app. Now we only filter games
-                    // because we have a dedicated steam-scanner for games.
-
-                    if (isSteam) return null;
-
-                    // Step 2: Check for Squirrel (Update.exe)
-                    let squirrelBin = await findSquirrelBinary(details.target, details.args);
-
-                    // --- Icon Strategy Priority ---
-
-                    // Priority 1: Custom Icon from the Shortcut (Top Level)
-                    // We re-read the top-level shortcut specifically for the custom icon field
+                } else {
                     try {
-                        const topSc = shell.readShortcutLink(appItem.path);
-                        if (topSc.icon) {
-                            const p = expandEnvVars(topSc.icon);
-                            if (fs.existsSync(p)) finalIconPath = p;
+                        // Step 1: Resolve the shortcut chain
+                        const details = resolveShortcutChain(appItem.path);
+
+                        // Check Steam Games (Filter out shortcuts that launch games, but KEEP Steam Client)
+                        // Common Steam shortcut: "C:\...\Steam.exe" -applaunch <id>
+                        // Or URL shortcut: steam://rungameid/<id>
+                        if (details.args && (details.args.includes('steam://') || details.args.includes('-applaunch'))) {
+                            isSteam = true;
                         }
-                    } catch (e) { }
+                        // Previously we filtered ALL steam.exe, which hid the main Steam app. Now we only filter games
+                        // because we have a dedicated steam-scanner for games.
 
-                    // Priority 2: Squirrel Binary (Real Discord.exe)
-                    if (!finalIconPath && squirrelBin) {
-                        finalIconPath = squirrelBin;
-                    }
+                        if (isSteam) return null;
 
-                    // Priority 3: Target Executable (Standard Apps)
-                    if (!finalIconPath && details.target && fs.existsSync(details.target)) {
-                        // Check "Smart Fuzzy Match" in folder ONLY if normal retrieval fails?
-                        // No, let's trust the target first.
-                        finalIconPath = details.target;
-                    }
+                        // Step 2: Check for Squirrel (Update.exe)
+                        let squirrelBin = await findSquirrelBinary(details.target, details.args);
 
-                    // Apply Icon Selection
-                    if (finalIconPath) {
-                        iconObj = await loadIcon(finalIconPath);
-                    }
+                        // --- Icon Strategy Priority ---
 
-                    // Priority 4: Smart Folder Scan (Fallback for generic icons)
-                    // Only if the result seems generic or missing.
-                    // But this broke Valorant. Let's make it very conservative.
-                    // Only do this if we STILL don't have a good icon (or it's Update.exe).
-                    if ((!iconObj && details.target) || (details.target.toLowerCase().endsWith('update.exe') && !squirrelBin)) {
+                        // Priority 1: Custom Icon from the Shortcut (Top Level)
+                        // We re-read the top-level shortcut specifically for the custom icon field
                         try {
-                            const targetDir = path.dirname(details.target);
-                            const files = await fsPromises.readdir(targetDir);
-                            const exeName = path.basename(details.target, path.extname(details.target)).toLowerCase();
-
-                            // Exact match only to be safe
-                            const exactIco = files.find(f => f.toLowerCase() === `${exeName}.ico`);
-                            if (exactIco) {
-                                iconObj = await loadIcon(path.join(targetDir, exactIco));
+                            const topSc = shell.readShortcutLink(appItem.path);
+                            if (topSc.icon) {
+                                const p = expandEnvVars(topSc.icon);
+                                if (fs.existsSync(p)) finalIconPath = p;
                             }
                         } catch (e) { }
-                    }
 
-                } catch (e) { }
+                        // Priority 2: Squirrel Binary (Real Discord.exe)
+                        if (!finalIconPath && squirrelBin) {
+                            finalIconPath = squirrelBin;
+                        }
+
+                        // Priority 3: Target Executable (Standard Apps)
+                        if (!finalIconPath && details.target && fs.existsSync(details.target)) {
+                            // Check "Smart Fuzzy Match" in folder ONLY if normal retrieval fails?
+                            // No, let's trust the target first.
+                            finalIconPath = details.target;
+                        }
+
+                        // Apply Icon Selection
+                        if (finalIconPath) {
+                            iconObj = await loadIcon(finalIconPath);
+                        }
+
+                        // Priority 4: Smart Folder Scan (Fallback for generic icons)
+                        // Only if the result seems generic or missing.
+                        // But this broke Valorant. Let's make it very conservative.
+                        // Only do this if we STILL don't have a good icon (or it's Update.exe).
+                        if ((!iconObj && details.target) || (details.target.toLowerCase().endsWith('update.exe') && !squirrelBin)) {
+                            try {
+                                const targetDir = path.dirname(details.target);
+                                const files = await fsPromises.readdir(targetDir);
+                                const exeName = path.basename(details.target, path.extname(details.target)).toLowerCase();
+
+                                // Exact match only to be safe
+                                const exactIco = files.find(f => f.toLowerCase() === `${exeName}.ico`);
+                                if (exactIco) {
+                                    iconObj = await loadIcon(path.join(targetDir, exactIco));
+                                }
+                            } catch (e) { }
+                        }
+
+                    } catch (e) { }
+
+                } // End if (isUwp) / else
 
                 // Final Fallback: The original .lnk file
                 // If everything else failed, THIS is what makes Valorant work (Windows resolves it)

@@ -160,16 +160,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             <span class="ws-label">Nouvel Espace</span>
         `;
         addBtn.onclick = () => {
-            const name = prompt("Nom du nouvel espace (ex: Gaming):");
-            if (name) {
-                const icon = prompt("Un emoji pour l'icône ?", "🎮");
-                widgetManager.workspaceManager.createWorkspace(name, icon || '📁');
-                renderWorkspaces();
-                notifications.show('Espace créé !', 'success');
-            }
+            document.getElementById('new-ws-name').value = '';
+            document.getElementById('new-ws-icon').value = '';
+            document.getElementById('create-workspace-modal').classList.add('open');
+            document.getElementById('new-ws-name').focus();
         };
         workspaceSwitcher.appendChild(addBtn);
     }
+
+    // --- Create Workspace Modal Logic ---
+    const createWsModal = document.getElementById('create-workspace-modal');
+    const createWsConfirm = document.getElementById('create-ws-confirm');
+    const createWsCancel = document.getElementById('create-ws-cancel');
+
+    if (createWsCancel) createWsCancel.onclick = () => createWsModal.classList.remove('open');
+
+    if (createWsConfirm) createWsConfirm.onclick = () => {
+        const name = document.getElementById('new-ws-name').value.trim();
+        const icon = document.getElementById('new-ws-icon').value.trim();
+
+        if (name) {
+            widgetManager.workspaceManager.createWorkspace(name, icon || '📁');
+            renderWorkspaces();
+            notifications.show('Espace créé !', 'success');
+            createWsModal.classList.remove('open');
+        } else {
+            notifications.show('Le nom est obligatoire.', 'warning');
+        }
+    };
+
+
 
     // Initial Render
     renderWorkspaces();
@@ -593,7 +613,121 @@ document.addEventListener('DOMContentLoaded', async () => {
     const wsKill = document.getElementById('ws-kill-rules');
     const wsSave = document.getElementById('ws-save-btn');
     const wsCancel = document.getElementById('ws-cancel-btn');
+
+    // App Selector Elements
+    const wsAppSearch = document.getElementById('ws-app-search');
+    const wsAppList = document.getElementById('ws-app-list');
+
     let currentConfigWsId = null;
+
+    function renderAppSelector(query = '') {
+        wsAppList.innerHTML = '';
+        if (!query) {
+            wsAppList.style.display = 'none';
+            return;
+        }
+
+        const filtered = allApps.filter(app => app.name.toLowerCase().includes(query.toLowerCase()));
+
+        if (filtered.length === 0) {
+            wsAppList.innerHTML = '<div style="padding:0.5rem; text-align:center; opacity:0.5; font-size:0.9rem;">Aucune application trouvée</div>';
+            wsAppList.style.display = 'block';
+            return;
+        }
+
+        filtered.forEach(app => {
+            const item = document.createElement('div');
+            item.style.padding = '0.5rem 1rem';
+            item.style.cursor = 'pointer';
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            item.style.gap = '0.8rem';
+            item.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+            item.style.transition = 'background 0.2s';
+
+            // Enable Drag
+            item.draggable = true;
+            item.ondragstart = (e) => {
+                e.dataTransfer.setData('text/plain', app.path);
+                e.dataTransfer.setData('application/x-app-name', app.name); // Not used but good for metadata
+                e.dataTransfer.effectAllowed = 'copy';
+            };
+
+            item.onmouseover = () => item.style.background = 'rgba(255,255,255,0.1)';
+            item.onmouseout = () => item.style.background = 'transparent';
+
+            item.innerHTML = `
+                <img src="${app.icon || 'src/logo.png'}" style="width:20px; height:20px; object-fit:contain;">
+                <span style="font-size:0.9rem;">${app.name}</span>
+            `;
+
+            item.onclick = () => {
+                // Add to textarea
+                const currentVal = wsLaunch.value;
+                const newline = currentVal.length > 0 && !currentVal.endsWith('\n') ? '\n' : '';
+                wsLaunch.value += `${newline}${app.path}`;
+
+                // Feedback
+                notifications.show(`Ajouté : ${app.name}`, 'success');
+                wsAppSearch.value = '';
+                renderAppSelector(''); // Clear
+            };
+
+            wsAppList.appendChild(item);
+        });
+
+        wsAppList.style.display = 'block';
+    }
+
+    if (wsAppSearch) {
+        wsAppSearch.addEventListener('input', (e) => renderAppSelector(e.target.value));
+        wsAppSearch.addEventListener('focus', () => {
+            if (wsAppSearch.value) renderAppSelector(wsAppSearch.value);
+        });
+        // Optional: Hide close on blur with delay? Let's keep it simple for now.
+    }
+
+    // Drag & Drop Logic for Textareas
+    [wsLaunch, wsKill].forEach(el => {
+        if (!el) return;
+        el.ondragover = (e) => {
+            e.preventDefault(); // Allow drop
+            el.style.borderColor = 'var(--accent)';
+        };
+        el.ondragleave = () => {
+            el.style.borderColor = 'var(--glass-border)';
+        };
+    });
+
+    if (wsLaunch) {
+        wsLaunch.ondrop = (e) => {
+            e.preventDefault();
+            wsLaunch.style.borderColor = 'var(--glass-border)';
+            const path = e.dataTransfer.getData('text/plain');
+            if (path) {
+                const currentVal = wsLaunch.value;
+                const newline = currentVal.length > 0 && !currentVal.endsWith('\n') ? '\n' : '';
+                wsLaunch.value += `${newline}${path}`;
+                notifications.show('Ajouté au lancement', 'success');
+            }
+        };
+    }
+
+    if (wsKill) {
+        wsKill.ondrop = (e) => {
+            e.preventDefault();
+            wsKill.style.borderColor = 'var(--glass-border)';
+            const path = e.dataTransfer.getData('text/plain');
+            if (path) {
+                // Extract executable name
+                const exeName = path.split('\\').pop().split('/').pop();
+                const currentVal = wsKill.value;
+                const separator = currentVal.length > 0 && !currentVal.trim().endsWith(',') ? ', ' : '';
+                wsKill.value += `${separator}${exeName}`;
+                notifications.show(`Ajouté à la fermeture : ${exeName}`, 'success');
+            }
+        };
+    }
 
     function openWorkspaceConfig(ws) {
         currentConfigWsId = ws.id;
@@ -604,10 +738,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         wsLaunch.value = (rules.launch || []).join('\n');
         wsKill.value = (rules.kill || []).join(', '); // Comma separated for kill
 
-        wsModal.style.display = 'block';
+        // Reset Search
+        if (wsAppSearch) {
+            wsAppSearch.value = '';
+            wsAppList.style.display = 'none';
+        }
+
+        wsModal.classList.add('open');
     }
 
-    if (wsCancel) wsCancel.onclick = () => wsModal.style.display = 'none';
+    if (wsCancel) wsCancel.onclick = () => wsModal.classList.remove('open');
 
     if (wsSave) wsSave.onclick = () => {
         if (!currentConfigWsId) return;
@@ -620,12 +760,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         widgetManager.workspaceManager.updateRules(currentConfigWsId, { launch, kill });
 
         // Close
-        wsModal.style.display = 'none';
+        wsModal.classList.remove('open');
         notifications.show('Règles mises à jour', 'success');
     };
 
     // Close modal when clicking outside
     window.onclick = (e) => {
-        if (e.target === wsModal) wsModal.style.display = 'none';
+        if (e.target === wsModal) wsModal.classList.remove('open');
+        if (typeof createWsModal !== 'undefined' && e.target === createWsModal) createWsModal.classList.remove('open');
     };
 });

@@ -43,6 +43,7 @@
                 </div>
 
                 <button id="settings-btn" class="nav-btn" title="Paramètres">
+                    <span class="icon">⚙️</span>
                     <span class="label">Paramètres</span>
                 </button>
             </div>
@@ -239,6 +240,27 @@
                     faire glisser un raccourci ici.</div>
             </div>
 
+            <!-- App Selector Section -->
+            <div style="margin-bottom: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+                <label style="display:block; margin-bottom: 0.5rem; color: var(--text-muted);">Ajout rapide (Rechercher
+                    une app) :</label>
+                <div style="position:relative;">
+                    <input type="text" id="ws-app-search" placeholder="Ex: Chrome, Steam..." class="settings-input"
+                        style="margin-bottom: 0.5rem; padding-left: 2rem;">
+                    <span style="position:absolute; left: 10px; top: 12px; opacity:0.5;">🔍</span>
+                </div>
+                <div id="ws-app-list" style="
+                    max-height: 150px; 
+                    overflow-y: auto; 
+                    background: rgba(0,0,0,0.2); 
+                    border-radius: 8px; 
+                    border: 1px solid var(--glass-border);
+                    display:none; /* Hidden by default until search or focus */
+                ">
+                    <!-- Results injected by JS -->
+                </div>
+            </div>
+
             <div style="margin-bottom: 1.5rem;">
                 <label style="display:block; margin-bottom: 0.5rem; color: var(--text-muted);">Apps à fermer (Kill)
                     :</label>
@@ -251,6 +273,24 @@
                     style="width: auto; background: transparent;">Annuler</button>
                 <button id="ws-save-btn" class="nav-btn"
                     style="width: auto; background: var(--accent); color: white;">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Workspace Modal -->
+    <div id="create-workspace-modal" class="modal">
+        <div class="modal-content"
+            style="background: #1a1a1a; padding: 2rem; border-radius: 20px; width: 400px; max-width: 90%; margin: 15% auto; border: 1px solid var(--glass-border); color: white; text-align: center;">
+            <h2 style="margin-top:0;">Nouvel Espace</h2>
+            <input type="text" id="new-ws-name" placeholder="Nom (ex: Gaming)"
+                style="width: 100%; margin-bottom: 1rem; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white;">
+            <input type="text" id="new-ws-icon" placeholder="Emoji (ex: 🎮)"
+                style="width: 100%; margin-bottom: 1.5rem; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white;">
+
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <button id="create-ws-cancel" class="nav-btn" style="width: auto;">Annuler</button>
+                <button id="create-ws-confirm" class="nav-btn"
+                    style="width: auto; background: var(--accent); color: white;">Créer</button>
             </div>
         </div>
     </div>

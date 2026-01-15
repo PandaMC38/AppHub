@@ -20,6 +20,17 @@ export class WorkspaceManager {
         }
     }
 
+    checkMigration() {
+        let changed = false;
+        this.workspaces.forEach(ws => {
+            if (!ws.rules) {
+                ws.rules = { launch: [], kill: [] };
+                changed = true;
+            }
+        });
+        if (changed) this.save();
+    }
+
     save() {
         // Before saving specific workspace, ensure current widgets are synced to it
         this.syncCurrentWorkspace();
