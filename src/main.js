@@ -481,14 +481,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     addWidgetBtn.onclick = () => {
         settingsDrawer.classList.remove('open'); // Close settings if open
         widgetDrawer.classList.add('open');
-        // Optional: Auto-enable edit mode when opening drawer
+        // Auto-enable edit mode when opening drawer
         widgetManager.toggleEditMode(true);
     };
 
     closeDrawerBtn.onclick = () => {
         widgetDrawer.classList.remove('open');
-        // Optional: Disable edit mode on close? 
-        // widgetManager.toggleEditMode(false);
+        // Disable edit mode on close
+        widgetManager.toggleEditMode(false);
     };
 
     // Settings

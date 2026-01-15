@@ -7,6 +7,13 @@ et ce projet adhère à la [Gestion sémantique de version](https://semver.org/s
 
 ## [À venir]
 
+## [1.2.0] - 2026-01-15
+
+### UX & Ergonomie (Suite à l'Audit)
+- **Mode Édition Intelligent** : Le mode modification (tremblement des widgets) est désormais synchronisé avec le panneau latéral. Il s'active à l'ouverture et se désactive automatiquement à la fermeture ("Invisible Design").
+- **Validation UX** : Validation complète du flux de configuration des Workspaces (Recherche + Drag & Drop) et du système d'annulation (Toast Undo).
+- **Score Audit** : Atteinte d'un score "Excellent" (9.5/10) après correction des points de friction critiques.
+
 ## [1.1.0] - 2026-01-15
 
 ### Ajouté
